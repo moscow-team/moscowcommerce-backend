@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

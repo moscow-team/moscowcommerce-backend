@@ -1,11 +1,9 @@
 package com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers;
 
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class UserMapper {
     public static User toDomain(CreateUserDTO userDTO) {
@@ -24,5 +22,9 @@ public class UserMapper {
         userEntity.setPassword(userDomain.getPassword());
 
         return userEntity;
+    }
+
+    public static ResultUserDTO toResultUserDTO(UserEntity userEntity) {
+        return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName());
     }
 }
