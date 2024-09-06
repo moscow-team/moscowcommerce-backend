@@ -36,6 +36,7 @@ public final class CreateUserService implements ICreateUserService{
         // Mapeamos la entidad de dominio a la entidad de base de datos
         UserEntity userEntity = UserMapper.toEntity(user);
 
+        System.out.println(userEntity);
         // Guardamos usuario en la BD
         this.repository.save(userEntity);
     }

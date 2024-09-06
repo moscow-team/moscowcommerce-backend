@@ -1,7 +1,8 @@
 package com.example.moscowcommerce_backend.Auth.Application.Interfaces;
 
-import com.example.moscowcommerce_backend.Users.Domain.User;
+import com.example.moscowcommerce_backend.Auth.Infrastructure.DTO.LogInDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 
 public interface IAuthService {
-    boolean authenticate(User user);
+    UserEntity authenticate(LogInDTO logInDTO);
 }
