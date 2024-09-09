@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Data
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public final class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
