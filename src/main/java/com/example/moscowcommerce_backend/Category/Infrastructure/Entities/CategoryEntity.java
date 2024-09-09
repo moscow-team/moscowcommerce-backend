@@ -1,5 +1,7 @@
 package com.example.moscowcommerce_backend.Category.Infrastructure.Entities;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -11,7 +13,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "category")
 public final class CategoryEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,29 +23,25 @@ public final class CategoryEntity {
     @Column(nullable = true)
     private String description;
 
-    public Integer getId() {
-        return id;
+    @Column(nullable = false, columnDefinition = "DATE", updatable = false)
+    private LocalDate creationDate;
+
+    @Column(nullable = true, columnDefinition = "DATE")
+    private LocalDate modificationDate;
+
+    @Column(nullable = true, columnDefinition = "DATE")
+    private LocalDate archivedDate;
+
+    // Método que se ejecuta antes de persistir la entidad
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = LocalDate.now();
+        this.modificationDate = LocalDate.now();
     }
 
-    public String getDescription() {
-        return description;
+    // Método que se ejecuta antes de actualizar la entidad
+    @PreUpdate
+    protected void onUpdate() {
+        this.modificationDate = LocalDate.now();
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-
 }
