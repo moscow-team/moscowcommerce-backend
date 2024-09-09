@@ -3,6 +3,7 @@ package com.example.moscowcommerce_backend.Category.Infrastructure.Mappers;
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.CreateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.ResultCategoryDTO;
+import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.UpdateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
 
 public class CategoryMapper {
@@ -51,5 +52,9 @@ public class CategoryMapper {
         String modificationDate = categoryEntity.getModificationDate() != null ? categoryEntity.getModificationDate().toString() : "";
 
         return ResultCategoryDTO.create(categoryEntity.getId(), categoryEntity.getName(), categoryEntity.getDescription(), creationDate, modificationDate, archivedDate);
+    }
+
+    public static Category toDomainFromUpdateDTO(UpdateCategoryDTO categoryDTO, Integer id) {
+        return new Category(id, categoryDTO.getName(), categoryDTO.getDescription());
     }
 }

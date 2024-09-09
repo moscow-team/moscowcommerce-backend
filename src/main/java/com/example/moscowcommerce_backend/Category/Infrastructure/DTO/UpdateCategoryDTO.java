@@ -1,13 +1,11 @@
 package com.example.moscowcommerce_backend.Category.Infrastructure.DTO;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class UpdateCategoryDTO {
-    @NotBlank(message = "Debe identificar a la categoria")
-    private Integer id;
 
-    @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 1, max = 50, message = "El nombre debe tener entre 1 y 50 caracteres")
     private String name;
 

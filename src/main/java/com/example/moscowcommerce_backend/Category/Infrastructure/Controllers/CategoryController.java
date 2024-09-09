@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -86,10 +84,10 @@ public class CategoryController {
         }
     }
 
-    @PutMapping()
-    public ResponseEntity<Result<ResultCategoryDTO>> updateCategory(@RequestBody UpdateCategoryDTO category) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Result<ResultCategoryDTO>> updateCategory(@RequestBody UpdateCategoryDTO category, @PathVariable Integer id) {
         try {
-            Category categoryToUpdate = CategoryMapper.toDomainFromDTO(category);
+            Category categoryToUpdate = CategoryMapper.toDomainFromUpdateDTO(category, id);
             CategoryEntity categoryUpdated = this.updateCategoryService.updateCategory(categoryToUpdate);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(categoryUpdated);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria actualizada con éxito"), HttpStatus.OK);
