@@ -26,16 +26,12 @@ public class UpdateCategoryService implements IUpdateCategoryService {
         Optional<CategoryEntity> categoryEntity = this.categoryRepository.findById(updateCategory.getId());
 
         if (categoryEntity.isEmpty()) {
-            throw new CategoryNotFoundException("[Categoria: "+updateCategory.getName()+"]"+"La categoria no existe");
+            throw new CategoryNotFoundException(
+                    "[Categoria: " + updateCategory.getName() + "]" + "La categoria no existe");
         }
 
-        //TODO: Terminar de implementar la actualización de la categoría
         CategoryEntity category = CategoryMapper.toEntity(updateCategory);
 
         return categoryRepository.save(category);
-
     }
-
-
-    
 }
