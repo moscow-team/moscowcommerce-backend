@@ -1,12 +1,10 @@
 package com.example.moscowcommerce_backend.Category.Infrastructure.Controllers;
 
-import com.example.moscowcommerce_backend.Category.Application.CreateCategoryService;
-import com.example.moscowcommerce_backend.Category.Application.DeleteCategoryService;
-import com.example.moscowcommerce_backend.Category.Application.ListCategoryService;
-import com.example.moscowcommerce_backend.Category.Application.UnarchivedCategory;
+import com.example.moscowcommerce_backend.Category.Application.*;
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.CreateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.ResultCategoryDTO;
+import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.UpdateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
 import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
@@ -18,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -25,18 +25,20 @@ public class CategoryController {
     private final ListCategoryService listCategoryService;
     private final DeleteCategoryService deleteCategoryService;
     private final UnarchivedCategory unarchivedCategory;
-
+    private final UpdateCategoryService updateCategoryService;
     @Autowired
     public CategoryController(
             CreateCategoryService createCategoryService,
             ListCategoryService listCategoryService,
             DeleteCategoryService deleteCategoryService,
-            UnarchivedCategory unarchivedCategory
+            UnarchivedCategory unarchivedCategory,
+            UpdateCategoryService updateCategoryService
     ) {
         this.createCategoryService = createCategoryService;
         this.listCategoryService = listCategoryService;
         this.deleteCategoryService = deleteCategoryService;
         this.unarchivedCategory = unarchivedCategory;
+        this.updateCategoryService = updateCategoryService;
     }
 
     @PostMapping
@@ -79,6 +81,18 @@ public class CategoryController {
             CategoryEntity category = this.unarchivedCategory.execute(id);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(category);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria desarchivada con éxito"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping()
+    public ResponseEntity<Result<ResultCategoryDTO>> updateCategory(@RequestBody UpdateCategoryDTO category) {
+        try {
+            Category categoryToUpdate = CategoryMapper.toDomainFromDTO(category);
+            CategoryEntity categoryUpdated = this.updateCategoryService.updateCategory(categoryToUpdate);
+            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(categoryUpdated);
+            return new ResponseEntity<>(Result.success(categoryDTO, "Categoria actualizada con éxito"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
