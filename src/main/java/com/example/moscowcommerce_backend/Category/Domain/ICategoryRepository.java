@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface ICategoryRepository extends JpaRepository<CategoryEntity, Integer> {
     public List<CategoryEntity>  findAll();
+    public Optional<CategoryEntity> findByNameIgnoreCase(String name);
     public Optional<CategoryEntity> save(Category categoryDomain);
 }

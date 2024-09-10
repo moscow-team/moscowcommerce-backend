@@ -12,7 +12,7 @@ import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.Categ
 
 @Service
 public class ListCategoryService implements IListCategoryService {
-    
+
     ICategoryRepository categoryRepository;
 
     @Autowired
@@ -32,5 +32,24 @@ public class ListCategoryService implements IListCategoryService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public CategoryEntity findByName(String name) {
+        return categoryRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new CategoryNotFoundException("No se encontró la categoría " + name));
+    }
+
+    @Override
+    public CategoryEntity findById(Integer id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("No se encontró la categoría con id " + id));
+    }
+
+    @Override
+    public Boolean existCategoryByName(String name) {
+        CategoryEntity category = this.categoryRepository.findByNameIgnoreCase(name).orElse(null);
+        System.out.println(category);
+        return category != null;
     }
 }

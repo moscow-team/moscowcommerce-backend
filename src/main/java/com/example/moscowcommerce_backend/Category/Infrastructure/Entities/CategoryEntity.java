@@ -17,7 +17,7 @@ public final class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = true)
@@ -32,14 +32,12 @@ public final class CategoryEntity {
     @Column(nullable = true, columnDefinition = "DATE")
     private LocalDate archivedDate;
 
-    // Método que se ejecuta antes de persistir la entidad
     @PrePersist
     protected void onCreate() {
         this.creationDate = LocalDate.now();
         this.modificationDate = LocalDate.now();
     }
 
-    // Método que se ejecuta antes de actualizar la entidad
     @PreUpdate
     protected void onUpdate() {
         this.modificationDate = LocalDate.now();
