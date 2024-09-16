@@ -12,6 +12,7 @@ import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.Catego
 import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Domain.ProductPhoto;
 import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.CreateProductDTO;
+import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.ResultProductDTO;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductPhotoEntity;
 
@@ -74,5 +75,37 @@ public class ProductMapper {
             photos
         );
         
+    }
+
+    public static Product toDomainFromEntity(ProductEntity productEntity) {
+        if (productEntity == null) {
+            return null;
+        }
+
+        Category category = CategoryMapper.toDomainFromEntity(productEntity.getCategory());
+        List<ProductPhoto> photos = productEntity.getPhotos().stream()
+                .map(photo -> new ProductPhoto(photo.getUrl()))
+                .collect(Collectors.toList());
+
+        return new Product(
+            productEntity.getId(),
+            productEntity.getName(),
+            productEntity.getDescription(),
+            category,
+            productEntity.getPrice(),
+            productEntity.getStock(),
+            photos
+        );
+    }
+
+    public static ResultProductDTO toResultProductDTO(Product product) {
+        return new ResultProductDTO(
+            product.getId(),
+            product.getName(),
+            product.getDescription(),
+            product.getPrice(),
+            product.getStock(),
+            product.getCategory().getId()
+        );
     }
 }
