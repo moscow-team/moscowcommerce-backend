@@ -44,7 +44,7 @@ public class LoginController {
 
             return new ResponseEntity<>(Result.success(resultLogInDTO, "Usuario autenticado con éxito"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return new ResponseEntity<>(Result.failure("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
+        } 
     }
 }

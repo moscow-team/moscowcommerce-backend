@@ -23,6 +23,10 @@ public class Result<T> {
     public static <T> Result<T> failure(String message) {
         return new Result<>(null, message, Status.FAILURE);
     }
+    
+    public static <T> Result<T> failure(String message, T data) {
+        return new Result<>(data, message, Status.FAILURE);
+    }
 
     public boolean isSuccess() {
         return status == Status.SUCCESS;

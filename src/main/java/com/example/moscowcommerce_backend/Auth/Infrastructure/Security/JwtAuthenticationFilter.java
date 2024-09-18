@@ -15,12 +15,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import com.example.moscowcommerce_backend.Auth.Domain.Exceptions.InvalidTokenException;
+import com.example.moscowcommerce_backend.Auth.Domain.Exceptions.UnauthorizedException;
+
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final HandlerExceptionResolver handlerExceptionResolver;
-
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
@@ -31,7 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
-        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
@@ -49,7 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-            final String userEmail = jwtService.extractUsername(jwt);
+            
+            final String userEmail = this.extractName(jwt);
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -69,8 +70,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (Exception exception) {
-            handlerExceptionResolver.resolveException(request, response, null, exception);
+        } catch (InvalidTokenException e) {
+            throw new InvalidTokenException(e.getMessage());
+        } 
+        catch (Exception exception) {
+            throw new UnauthorizedException();
+        }
+    }
+
+    private String extractName(String jwt) {
+        try {
+            return jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            throw new InvalidTokenException("Token invalido: " + jwt);
         }
     }
 }

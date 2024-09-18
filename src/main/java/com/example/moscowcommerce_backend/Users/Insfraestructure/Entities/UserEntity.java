@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -30,6 +32,10 @@ public final class UserEntity implements UserDetails{
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
      @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

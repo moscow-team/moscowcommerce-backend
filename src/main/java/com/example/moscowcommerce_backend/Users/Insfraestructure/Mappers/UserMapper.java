@@ -4,10 +4,12 @@ import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserD
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
 
 public class UserMapper {
     public static User toDomainFromDTO(CreateUserDTO userDTO) {
-       return new User(userDTO.email, userDTO.fullName, userDTO.password);
+        Role role= Role.valueOf(userDTO.getRole().toUpperCase()); 
+        return new User(userDTO.getEmail(), userDTO.getFullName(), userDTO.getPassword(), role);
     }
 
     public static User toDomainFromEntity(UserEntity userEntity) {
@@ -15,7 +17,7 @@ public class UserMapper {
             return null;
         }
 
-        return new User(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getPassword());
+        return new User(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getPassword(), userEntity.getRole());
     }
 
     public static UserEntity toEntity(User userDomain) {
@@ -28,11 +30,20 @@ public class UserMapper {
         userEntity.setEmail(userDomain.getEmail());
         userEntity.setFullName(userDomain.getFullName());
         userEntity.setPassword(userDomain.getPassword());
+        userEntity.setRole(userDomain.getRole());
 
         return userEntity;
     }
 
-    public static ResultUserDTO toResultUserDTO(User userEntity) {
-        return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName());
+    public static ResultUserDTO toResultUserDTO(User user) {
+        return ResultUserDTO.create(user.getId(), user.getEmail(), user.getFullName(), user.getRole());
+    }
+
+    public static ResultUserDTO toResultFromEntity(UserEntity userEntity) {
+        if (userEntity == null) {
+            return null;
+        }
+
+        return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getRole());
     }
 }

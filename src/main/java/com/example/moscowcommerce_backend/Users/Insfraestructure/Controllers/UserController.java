@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
 import com.example.moscowcommerce_backend.Users.Application.CreateUserService;
 import com.example.moscowcommerce_backend.Users.Application.ListUserService;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
+
+import jakarta.validation.Valid;
+
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserAlreadyExistsException;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 
@@ -42,29 +46,28 @@ public class UserController {
 
     // Endpoint para crear un usuario
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody CreateUserDTO user) {
+    public ResponseEntity<Result<ResultUserDTO>> createUser(@Valid @RequestBody CreateUserDTO user) {
         try {
-            user.password = this.passwordEncoder.encode(user.password);
+            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
             User userToSave = UserMapper.toDomainFromDTO(user);
-            this.createUserService.create(userToSave);
-            return new ResponseEntity<>("User created successfully.", HttpStatus.CREATED);
+            ResultUserDTO result = this.createUserService.create(userToSave);
+            return new ResponseEntity<>(Result.success(result, "Usuario creado con éxito"), HttpStatus.CREATED);
         } catch (UserAlreadyExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping
-    public ResponseEntity<Object> listUser() {
+    public ResponseEntity<Result<List<ResultUserDTO>>> listUser() {
         try {
             List<User> users = this.listUserService.findAll();
 
             List<ResultUserDTO> result = users.stream().map(user -> UserMapper.toResultUserDTO(user)).toList();
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(Result.success(result, "Usuarios listados con éxito"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
