@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.moscowcommerce_backend.Product.Application.interfaces.IListProductService;
 import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
@@ -11,6 +12,7 @@ import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
 
+@Service
 public class ListProductService implements IListProductService {
     private  final IProductRepository repository;
 

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Category.Domain.Exceptions.CategoryNotFoundException;
@@ -16,6 +18,7 @@ import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.ResultProdu
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductPhotoEntity;
 
+@Component
 public class ProductMapper {
 
     private final ICategoryRepository categoryRepository;
@@ -30,7 +33,6 @@ public class ProductMapper {
         }
 
         ProductEntity productEntity = new ProductEntity();
-        productEntity.setId(product.getId());
         productEntity.setName(product.getName());
         productEntity.setDescription(product.getDescription());
         productEntity.setPrice(product.getPrice());
@@ -55,16 +57,22 @@ public class ProductMapper {
     }
 
     public Product toDomainFromDTO(CreateProductDTO productDTO) {
-        Optional<CategoryEntity> categoryOptional = categoryRepository.findById(productDTO.categoryId);
-        if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category not found");
-        }
-        CategoryEntity categoryEntity = categoryOptional.get();
-        Category categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity);
+        Category categoryDomain = null;
 
-        List<ProductPhoto> photos = productDTO.urlPhotos.stream()
+        if (productDTO.categoryId != null) {
+            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(productDTO.categoryId);
+            if (categoryOptional.isEmpty()) {
+                throw new CategoryNotFoundException("Category with ID " + productDTO.categoryId + " not found.");
+            }
+            CategoryEntity categoryEntity = categoryOptional.get();
+            categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity); 
+        }
+        
+        List<ProductPhoto> photos = (productDTO.urlPhotos != null && !productDTO.urlPhotos.isEmpty()) 
+        ? productDTO.urlPhotos.stream()
                 .map(url -> new ProductPhoto(url))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+        : List.of(); 
 
         return new Product(
             productDTO.name,
@@ -105,7 +113,8 @@ public class ProductMapper {
             product.getDescription(),
             product.getPrice(),
             product.getStock(),
-            product.getCategory().getId()
+            product.getCategory() != null ? product.getCategory().getId() : null,
+            product.getPhotos().stream().map(photo -> photo.getUrlPhoto()).collect(Collectors.toList())
         );
     }
 }

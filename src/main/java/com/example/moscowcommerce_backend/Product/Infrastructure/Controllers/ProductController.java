@@ -35,6 +35,7 @@ public class ProductController {
     // Endpoint para crear un producto
     @PostMapping
     public ResponseEntity<String> createProduct(@RequestBody CreateProductDTO product) {
+        System.out.println("CreateProductDTO received: " + product);
         try {
             Product productToSave = productMapper.toDomainFromDTO(product);
             this.createProductService.create(productToSave);

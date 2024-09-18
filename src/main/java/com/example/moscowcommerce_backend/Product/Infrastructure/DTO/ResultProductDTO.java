@@ -1,5 +1,7 @@
 package com.example.moscowcommerce_backend.Product.Infrastructure.DTO;
 
+import java.util.List;
+
 public class ResultProductDTO {
     private Integer id;
     private String name;
@@ -7,14 +9,16 @@ public class ResultProductDTO {
     private Double price;
     private Integer stock;
     private Integer categoryId;
+    private List<String> urlPhotos;
 
-    public ResultProductDTO(Integer id, String name, String description, Double price, Integer stock, Integer categoryId) {
+    public ResultProductDTO(Integer id, String name, String description, Double price, Integer stock, Integer categoryId, List<String> urlPhotos) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
         this.categoryId = categoryId;
+        this.urlPhotos = urlPhotos;
     }
 
     public Integer getId() {
@@ -39,5 +43,9 @@ public class ResultProductDTO {
 
     public Integer getCategoryId() {
         return categoryId;
+    }
+
+    public List<String> getUrlPhotos() {
+        return urlPhotos;
     }
 }
