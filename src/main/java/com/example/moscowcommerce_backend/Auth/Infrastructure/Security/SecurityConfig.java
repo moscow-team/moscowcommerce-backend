@@ -23,27 +23,33 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(
-        JwtAuthenticationFilter jwtAuthenticationFilter,
-        AuthenticationProvider authenticationProvider
-    ) {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            AuthenticationProvider authenticationProvider) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-         http
-            .csrf(AbstractHttpConfigurer::disable)  // Nueva forma de deshabilitar CSRF
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()    // Permitir POST en /users sin autenticación
-                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()    // Permitir POST en /login sin autenticación
-                .anyRequest().authenticated()             // Todas las demás solicitudes requieren autenticación
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // No gestionar estado en las sesiones
-            )
-            .authenticationProvider(authenticationProvider)  // Proveedor de autenticación customizado
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // Filtro JWT antes del filtro de autenticación por defecto
+        http
+                .csrf(AbstractHttpConfigurer::disable) // Nueva forma de deshabilitar CSRF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilitar CORS
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll() // Permitir POST en /users sin
+                                                                                // autenticación
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll() // Permitir POST en /login sin
+                                                                                     // autenticación
+                        .anyRequest().authenticated() // Todas las demás solicitudes requieren autenticación
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No gestionar estado en las sesiones
+                )
+                .authenticationProvider(authenticationProvider) // Proveedor de autenticación customizado
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Filtro JWT
+                                                                                                       // antes del
+                                                                                                       // filtro de
+                                                                                                       // autenticación
+                                                                                                       // por defecto
 
         return http.build();
     }
@@ -52,13 +58,12 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:8008", "http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
-
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**",configuration);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
