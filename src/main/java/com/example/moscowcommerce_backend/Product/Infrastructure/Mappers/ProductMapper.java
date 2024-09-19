@@ -62,20 +62,15 @@ public class ProductMapper {
     public static Product toDomainFromDTO(CreateProductDTO productDTO, ICategoryRepository categoryRepository) {
         Category categoryDomain = null;
 
-        if (productDTO.categoryId != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(productDTO.categoryId);
+        if (productDTO.getCategoryId() != null) {
+            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(productDTO.getCategoryId());
             if (categoryOptional.isEmpty()) {
-                throw new CategoryNotFoundException("Category with ID " + productDTO.categoryId + " not found.");
+                throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
             CategoryEntity categoryEntity = categoryOptional.get();
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity); 
         }
         
-        // List<ProductPhoto> photos = (productDTO.urlPhotos != null && !productDTO.urlPhotos.isEmpty()) 
-        // ? productDTO.urlPhotos.stream()
-        //         .map(url -> new ProductPhoto(url))
-        //         .collect(Collectors.toList())
-        // : List.of();
         List<ProductPhoto> photos = productDTO.urlPhotos.stream()
         .map(url -> new ProductPhoto(url))
         .collect(Collectors.toList());
@@ -120,7 +115,8 @@ public class ProductMapper {
         String price = String.valueOf(productEntity.getPrice());
         String stock = String.valueOf(productEntity.getStock());
 
-        Integer categoryId = productEntity.getCategory() != null ? productEntity.getCategory().getId() : null;
+        // Obtener el objeto Category
+        Category category = CategoryMapper.toDomainFromEntity(productEntity.getCategory());
 
         List<String> photoUrls = productEntity.getPhotos().stream()
                 .map(ProductPhotoEntity::getUrl)
@@ -132,7 +128,7 @@ public class ProductMapper {
             productEntity.getDescription(),
             price,
             stock,
-            categoryId,
+            category,
             photoUrls
         );
     }
