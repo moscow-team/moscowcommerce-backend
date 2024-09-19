@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.moscowcommerce_backend.Product.Application.interfaces.ICreateProductService;
 import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
 import com.example.moscowcommerce_backend.Product.Domain.Product;
-import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductAlreadyExistsException;
+import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductAlreadyExist;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
 
@@ -29,12 +29,12 @@ public class CreateProductService implements ICreateProductService {
         if (product.getId() != null) {
             Optional<ProductEntity> productExist = this.productRepository.findById(product.getId());
             if (productExist.isPresent()) {
-                throw new ProductAlreadyExistsException();
+                throw new ProductAlreadyExist("Ya existe un producto con el nombre "+product.getName());
             }
         }
         // Primero debemos crear el producto sin las fotos ya que no podriamos
         // referenciar las fotos a un producto no creado
-        ProductEntity productEntity = ProductMapper.toEntityWithoutPhotos(product);
+        ProductEntity productEntity = ProductMapper.toEntity(product);
         productEntity = productRepository.save(productEntity);
         // Luego de crear el producto, podemos agregar las fotos al producto
         ProductMapper.addPhotosToProductEntity(product, productEntity);

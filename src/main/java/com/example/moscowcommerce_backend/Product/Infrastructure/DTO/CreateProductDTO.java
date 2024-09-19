@@ -1,5 +1,6 @@
 package com.example.moscowcommerce_backend.Product.Infrastructure.DTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateProductDTO {
@@ -8,5 +9,5 @@ public class CreateProductDTO {
     public Integer stock;
     public Double price;
     public Integer categoryId;
-    public List<String> urlPhotos;
+    public List<String> urlPhotos = new ArrayList<>();
 }

@@ -2,6 +2,7 @@ package com.example.moscowcommerce_backend.Product.Domain;
 
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Product {
@@ -11,7 +12,7 @@ public class Product {
     private Category category;
     private Double price;
     private Integer stock;
-    private List<ProductPhoto> urlPhotos;
+    private List<ProductPhoto> urlPhotos = new ArrayList<>();
 
     public Product(){
         id = null;
