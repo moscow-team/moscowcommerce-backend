@@ -24,17 +24,26 @@ import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.Produc
 public class ProductMapper {
 
     // Mapea un dominio de producto a una entidad sin incluir las fotos.
-    public static ProductEntity toEntity(Product product) {
-        if (product == null) {
+    public static ProductEntity toEntity(Product productDomain) {
+        if (productDomain == null) {
             return null;
         }
 
         ProductEntity productEntity = new ProductEntity();
-        productEntity.setName(product.getName());
-        productEntity.setDescription(product.getDescription());
-        productEntity.setPrice(product.getPrice());
-        productEntity.setStock(product.getStock());
-        productEntity.setCategory(CategoryMapper.toEntity(product.getCategory()));
+
+        if (productDomain.getId() != null) {
+            productEntity.setId(productDomain.getId());
+        }
+        
+        productEntity.setName(productDomain.getName());
+        productEntity.setDescription(productDomain.getDescription());
+        productEntity.setPrice(productDomain.getPrice());
+        productEntity.setStock(productDomain.getStock());
+        productEntity.setCategory(CategoryMapper.toEntity(productDomain.getCategory()));
+
+        if (productDomain.getArchivedDate() != null) {
+            productEntity.setArchivedDate(productDomain.getArchivedDate());
+        }
 
         return productEntity;
     }
@@ -96,6 +105,19 @@ public class ProductMapper {
                 .map(photo -> new ProductPhoto(photo.getUrl()))
                 .collect(Collectors.toList());
 
+        if (productEntity.getArchivedDate() != null) {
+            return new Product(
+                productEntity.getId(),
+                productEntity.getName(),
+                productEntity.getDescription(),
+                category,
+                productEntity.getPrice(),
+                productEntity.getStock(),
+                photos,
+                productEntity.getArchivedDate()
+            );
+        }
+
         return new Product(
             productEntity.getId(),
             productEntity.getName(),
@@ -122,6 +144,11 @@ public class ProductMapper {
                 .map(ProductPhotoEntity::getUrl)
                 .collect(Collectors.toList());
 
+        String archivedDate = productEntity.getArchivedDate() != null ? productEntity.getArchivedDate().toString() : "";
+
+        // Determinar si el producto está archivado
+        boolean archived = productEntity.getArchivedDate() != null;
+
         return ResultProductDTO.create(
             productEntity.getId(),
             productEntity.getName(),
@@ -129,7 +156,9 @@ public class ProductMapper {
             price,
             stock,
             category,
-            photoUrls
+            photoUrls,
+            archived,
+            archivedDate
         );
     }
 

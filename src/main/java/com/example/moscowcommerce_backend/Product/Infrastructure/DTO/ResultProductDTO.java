@@ -15,9 +15,11 @@ public class ResultProductDTO {
     private Integer stock;
     private Category category;
     private List<String> urlPhotos;
+    private boolean archived;
+    private String archivedDate;
 
     public static ResultProductDTO create(Integer id, String name, String description, String price, String stock,
-            Category category, List<String> photoUrls) {
+            Category category, List<String> photoUrls,  boolean archived, String archivedDate) {
         ResultProductDTO resultProductDTO = new ResultProductDTO();
         resultProductDTO.setId(id);
         resultProductDTO.setName(name);
@@ -26,6 +28,8 @@ public class ResultProductDTO {
         resultProductDTO.setStock(Integer.parseInt(stock));
         resultProductDTO.setCategory(category);
         resultProductDTO.setUrlPhotos(photoUrls);
+        resultProductDTO.setArchived(archived);
+        resultProductDTO.setArchivedDate(archivedDate);
         return resultProductDTO;
     }
 }

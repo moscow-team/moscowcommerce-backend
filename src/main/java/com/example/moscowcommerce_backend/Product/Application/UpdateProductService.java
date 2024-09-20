@@ -41,12 +41,14 @@ public class UpdateProductService implements IUpdateProductService {
         existingProduct.setStock(updateProduct.getStock());
         existingProduct.setCategory(CategoryMapper.toEntity(updateProduct.getCategory()));
 
-        // Limpiar las fotos existentes y agregar las nuevas.
-        existingProduct.getPhotos().clear();
-        List<ProductPhotoEntity> updatedPhotos = updateProduct.getPhotos().stream()
-            .map(photo -> ProductMapper.toPhotoEntity(photo, existingProduct))
-            .collect(Collectors.toList());
-        existingProduct.getPhotos().addAll(updatedPhotos);
+        // Limpiar las fotos existentes y agregar las nuevas solo si se proporcionan
+        if (updateProduct.getPhotos() != null && !updateProduct.getPhotos().isEmpty()) {
+            existingProduct.getPhotos().clear();
+            List<ProductPhotoEntity> updatedPhotos = updateProduct.getPhotos().stream()
+                .map(photo -> ProductMapper.toPhotoEntity(photo, existingProduct))
+                .collect(Collectors.toList());
+            existingProduct.getPhotos().addAll(updatedPhotos);
+        }
         
         // Guardar el producto actualizado.
         return this.productRepository.save(existingProduct);
