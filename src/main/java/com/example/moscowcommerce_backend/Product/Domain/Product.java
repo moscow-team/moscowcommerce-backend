@@ -2,6 +2,8 @@ package com.example.moscowcommerce_backend.Product.Domain;
 
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Product {
@@ -11,7 +13,8 @@ public class Product {
     private Category category;
     private Double price;
     private Integer stock;
-    private List<ProductPhoto> urlPhotos;
+    private List<ProductPhoto> urlPhotos = new ArrayList<>();
+    private LocalDate archivedDate;
 
     public Product(){
         id = null;
@@ -20,7 +23,8 @@ public class Product {
         category = null;
         price = 0.0;
         stock = 0;
-        urlPhotos = null;
+        urlPhotos = new ArrayList<>();
+        this.archivedDate = null;
     }
 
     public Product(String name, String description, Integer stock, Double price) {
@@ -47,6 +51,17 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.urlPhotos = urlPhotos;
+    }
+
+    public Product(Integer id, String name, String description, Category category, Double price, Integer stock, List<ProductPhoto> urlPhotos, LocalDate archivedDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+        this.urlPhotos = urlPhotos;
+        this.archivedDate = archivedDate;
     }
 
     public Integer getId() {
@@ -103,5 +118,21 @@ public class Product {
 
     public void setPhotos(List<ProductPhoto> urlPhotos) {
         this.urlPhotos = urlPhotos;
+    }
+
+    public LocalDate getArchivedDate() {
+        return archivedDate;
+    }
+
+    public void archived() {
+        this.archivedDate = LocalDate.now();
+    }
+
+    public boolean isArchived() {
+        return this.archivedDate != null;
+    }
+
+    public void unarchived() {
+        this.archivedDate = null;
     }
 }

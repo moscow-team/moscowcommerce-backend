@@ -1,5 +1,7 @@
 package com.example.moscowcommerce_backend.Product.Infrastructure.Entities;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
@@ -36,7 +38,10 @@ public final class ProductEntity {
     private CategoryEntity category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductPhotoEntity> photos;
+    private List<ProductPhotoEntity> photos = new ArrayList<>();
+
+    @Column(nullable = true, columnDefinition = "DATE")
+    private LocalDate archivedDate;
 
     public CategoryEntity getCategory() {
         return category;
