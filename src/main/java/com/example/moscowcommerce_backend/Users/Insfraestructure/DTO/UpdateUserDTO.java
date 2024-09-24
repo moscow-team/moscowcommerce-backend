@@ -1,14 +1,14 @@
 package com.example.moscowcommerce_backend.Users.Insfraestructure.DTO;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UpdateUserDTO {
-    @NotBlank(message = "El id no puede estar vacio")
+    @NotNull(message = "El id no puede estar vacio")
     private Integer id;
     
     @Email(message = "El email no es valido")

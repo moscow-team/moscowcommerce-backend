@@ -2,13 +2,15 @@ package com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers;
 
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.UpdateUserDTO;
+import com.example.moscowcommerce_backend.Shared.Infrastructure.Utils;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
 
 public class UserMapper {
     public static User toDomainFromDTO(CreateUserDTO userDTO) {
-        Role role= Role.valueOf(userDTO.getRole().toUpperCase()); 
+        Role role = Role.valueOf(userDTO.getRole().toUpperCase());
         return new User(userDTO.getEmail(), userDTO.getFullName(), userDTO.getPassword(), role);
     }
 
@@ -45,5 +47,19 @@ public class UserMapper {
         }
 
         return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getRole());
+    }
+
+    public static User updateDTOToUserDomain(UpdateUserDTO userDTO) {
+        Role role = null;
+        if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
+            role = Role.valueOf(userDTO.getRole().toUpperCase());
+        }
+        User user = new User(userDTO.getId(), userDTO.getEmail(), userDTO.getFullName(), userDTO.getPassword(), role);
+
+        Utils.removeNullFields(user);
+
+        System.out.println(user.getEmail());
+
+        return user;
     }
 }

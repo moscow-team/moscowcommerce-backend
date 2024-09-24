@@ -22,6 +22,7 @@ public final class User {
         this.email = email;
         this.fullName = fullName;
         this.password = password;
+        this.role = rol;
     }
 
     public User(String email, String fullName, String password, Role role) {
