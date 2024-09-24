@@ -9,7 +9,8 @@ public class LogInMapper {
             token,
             user.getEmail(),
             user.getFullName(),
-            user.getId()
+            user.getId(),
+            user.getRole()
         );
     }
 }

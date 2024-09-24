@@ -1,36 +1,22 @@
 package com.example.moscowcommerce_backend.Auth.Infrastructure.DTO;
 
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
+
+import lombok.Data;
+@Data
 public class ResultLogInDTO {
     private String token;
     private Number userId;
     private String email;
     private String fullName;
+    private Role role;
 
 
-    public ResultLogInDTO(String token, String email, String fullName, Number userId) {
+    public ResultLogInDTO(String token, String email, String fullName, Number userId, Role role) {
         this.token = token;
         this.email = email;
         this.fullName = fullName;
         this.userId = userId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public Number getUserId() {
-        return userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+        this.role = role;
     }
 }
