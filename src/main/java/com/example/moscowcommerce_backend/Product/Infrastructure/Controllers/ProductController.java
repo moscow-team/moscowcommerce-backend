@@ -102,6 +102,9 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Result<ResultProductDTO>> updateProduct(@RequestBody UpdateProductDTO product, @PathVariable Integer id) {
         try {
+            var storageResult = storageImage.HandleImage(product.getPhotos());
+            product.setUrlPhotos(storageResult);
+            product.setPhotos(null);
             Product productToUpdate = ProductMapper.toDomainFromUpdateDTO(product, id, categoryRepository);
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productUpdated);

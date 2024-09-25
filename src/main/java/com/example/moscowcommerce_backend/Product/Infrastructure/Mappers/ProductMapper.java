@@ -166,7 +166,7 @@ public class ProductMapper {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(productDTO.getCategoryId());
+            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
