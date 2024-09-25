@@ -82,7 +82,7 @@ public class UserController {
     public ResponseEntity<Result<ResultUserDTO>> updateUser(@Valid @RequestBody UpdateUserDTO userToUpdateDTO) {
         try {
             if(userToUpdateDTO.getPassword() != null && !userToUpdateDTO.getPassword().isEmpty()) {
-                userToUpdateDTO.setPassword(userToUpdateDTO.getPassword());
+                userToUpdateDTO.setPassword(this.passwordEncoder.encode(userToUpdateDTO.getPassword()));
             }
 
             User userDomain = UserMapper.updateDTOToUserDomain(userToUpdateDTO);
