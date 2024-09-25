@@ -1,7 +1,8 @@
 package com.example.moscowcommerce_backend.Users.Application.Interfaces;
 
 import com.example.moscowcommerce_backend.Users.Domain.User;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 
 public interface ICreateUserService {
-    public void create(User user);
+    public ResultUserDTO create(User user);
 }

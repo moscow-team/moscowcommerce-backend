@@ -49,7 +49,6 @@ public class ListCategoryService implements IListCategoryService {
     @Override
     public Boolean existCategoryByName(String name) {
         CategoryEntity category = this.categoryRepository.findByNameIgnoreCase(name).orElse(null);
-        System.out.println(category);
         return category != null;
     }
 }

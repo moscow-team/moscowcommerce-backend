@@ -37,7 +37,6 @@ public class AuthService implements IAuthService {
 
             return UserMapper.toEntity(user);
         } catch (Exception e) {
-            System.out.print(e);
             return null;
         }
     }
