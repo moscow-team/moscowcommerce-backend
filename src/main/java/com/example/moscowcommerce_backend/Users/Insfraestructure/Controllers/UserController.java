@@ -8,16 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
 import com.example.moscowcommerce_backend.Users.Application.CreateUserService;
 import com.example.moscowcommerce_backend.Users.Application.ListUserService;
+import com.example.moscowcommerce_backend.Users.Application.UpdateUserService;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.UpdateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
+
+import jakarta.validation.Valid;
+
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserAlreadyExistsException;
+import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 
 @RestController
@@ -27,44 +35,65 @@ public class UserController {
     private final CreateUserService createUserService;
     private final ListUserService listUserService;
     private final PasswordEncoder passwordEncoder;
+    private final UpdateUserService updateUserService;
 
     // Inyección del servicio mediante el constructor
     @Autowired
     public UserController(
         CreateUserService createUserService,
         ListUserService listUserService,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        UpdateUserService updateUserService
         ) {
         this.createUserService = createUserService;
         this.listUserService = listUserService;
         this.passwordEncoder = passwordEncoder;
+        this.updateUserService = updateUserService;
     }
 
     // Endpoint para crear un usuario
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody CreateUserDTO user) {
+    public ResponseEntity<Result<ResultUserDTO>> createUser(@Valid @RequestBody CreateUserDTO user) {
         try {
-            user.password = this.passwordEncoder.encode(user.password);
+            user.setPassword(this.passwordEncoder.encode(user.getPassword()));
             User userToSave = UserMapper.toDomainFromDTO(user);
-            this.createUserService.create(userToSave);
-            return new ResponseEntity<>("User created successfully.", HttpStatus.CREATED);
+            ResultUserDTO result = this.createUserService.create(userToSave);
+            return new ResponseEntity<>(Result.success(result, "Usuario creado con éxito"), HttpStatus.CREATED);
         } catch (UserAlreadyExistsException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping
-    public ResponseEntity<Object> listUser() {
+    public ResponseEntity<Result<List<ResultUserDTO>>> listUser() {
         try {
             List<User> users = this.listUserService.findAll();
 
             List<ResultUserDTO> result = users.stream().map(user -> UserMapper.toResultUserDTO(user)).toList();
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(Result.success(result, "Usuarios listados con éxito"), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Result<ResultUserDTO>> updateUser(@Valid @RequestBody UpdateUserDTO userToUpdateDTO) {
+        try {
+            if(userToUpdateDTO.getPassword() != null && !userToUpdateDTO.getPassword().isEmpty()) {
+                userToUpdateDTO.setPassword(userToUpdateDTO.getPassword());
+            }
+
+            User userDomain = UserMapper.updateDTOToUserDomain(userToUpdateDTO);
+            
+            ResultUserDTO userResult = this.updateUserService.update(userDomain);
+
+            return new ResponseEntity<>(Result.success(userResult, "Usuario actualizado con éxito"), HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
