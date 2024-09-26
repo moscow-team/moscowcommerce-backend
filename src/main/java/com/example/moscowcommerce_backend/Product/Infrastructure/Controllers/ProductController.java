@@ -103,8 +103,8 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Result<ResultProductDTO>> updateProduct(@RequestBody UpdateProductDTO product, @PathVariable Integer id) {
+    @PutMapping(value="/{id}", consumes="multipart/form-data")
+    public ResponseEntity<Result<ResultProductDTO>> updateProduct(@ModelAttribute UpdateProductDTO product, @PathVariable Integer id) {
         try {
             if(product.getPhotos() == null || product.getPhotos().isEmpty()) {
                 product.setUrlPhotos(Collections.emptyList());
