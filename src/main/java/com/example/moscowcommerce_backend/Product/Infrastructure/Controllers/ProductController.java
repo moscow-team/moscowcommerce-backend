@@ -52,12 +52,16 @@ public class ProductController {
 
     // Endpoint para crear un producto
     @PostMapping(value="", consumes="multipart/form-data")
-    public ResponseEntity<Result<ResultProductDTO>> createProduct(@ModelAttribute CreateProductDTO createProductDTO) {
+    public ResponseEntity<Result<ResultProductDTO>> createProduct(@ModelAttribute CreateProductDTO product) {
         try {
-            var storageResult = storageImage.HandleImage(createProductDTO.getPhotos());
-            createProductDTO.setUrlPhotos(storageResult);
-            createProductDTO.setPhotos(null);
-            Product productToSave = ProductMapper.toDomainFromDTO(createProductDTO, categoryRepository);
+            if(product.getPhotos() == null || product.getPhotos().isEmpty()) {
+                product.setUrlPhotos(Collections.emptyList());
+            } else {
+                var storageResult = storageImage.HandleImage(product.getPhotos());
+                product.setUrlPhotos(storageResult);
+            }
+            product.setPhotos(null);
+            Product productToSave = ProductMapper.toDomainFromDTO(product, categoryRepository);
             ProductEntity productSaved = this.createProductService.create(productToSave);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productSaved);
             return new ResponseEntity<>(Result.success(productDTO, "Producto creado con éxito."), HttpStatus.CREATED);
@@ -102,8 +106,12 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Result<ResultProductDTO>> updateProduct(@RequestBody UpdateProductDTO product, @PathVariable Integer id) {
         try {
-            var storageResult = storageImage.HandleImage(product.getPhotos());
-            product.setUrlPhotos(storageResult);
+            if(product.getPhotos() == null || product.getPhotos().isEmpty()) {
+                product.setUrlPhotos(Collections.emptyList());
+            } else {
+                var storageResult = storageImage.HandleImage(product.getPhotos());
+                product.setUrlPhotos(storageResult);
+            }
             product.setPhotos(null);
             Product productToUpdate = ProductMapper.toDomainFromUpdateDTO(product, id, categoryRepository);
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);

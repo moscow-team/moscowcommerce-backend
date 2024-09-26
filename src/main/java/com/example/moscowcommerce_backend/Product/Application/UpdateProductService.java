@@ -37,8 +37,8 @@ public class UpdateProductService implements IUpdateProductService {
 
         String name = updateProduct.getName() != null ? updateProduct.getName() : existingProduct.getName();
         String description = updateProduct.getDescription() != null ? updateProduct.getDescription() : existingProduct.getDescription();
-        Integer stock = updateProduct.getStock() != null ? updateProduct.getStock() : existingProduct.getStock();
-        Double price = updateProduct.getPrice() != null ? updateProduct.getPrice() : existingProduct.getPrice();
+        Integer stock = updateProduct.getStock() > 0 ? updateProduct.getStock() : existingProduct.getStock();
+        Double price = updateProduct.getPrice() > 0 ? updateProduct.getPrice() : existingProduct.getPrice();
         Category category  = updateProduct.getCategory() != null ? updateProduct.getCategory() : CategoryMapper.toDomainFromEntity(existingProduct.getCategory());
 
         // Actualizar los atributos del producto existente
