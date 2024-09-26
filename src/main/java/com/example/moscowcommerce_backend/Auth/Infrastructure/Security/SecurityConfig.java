@@ -39,6 +39,7 @@ public class SecurityConfig {
                                                                                 // autenticación
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll() // Permitir POST en /login sin
                                                                                      // autenticación
+                        .requestMatchers(HttpMethod.GET,"/category", "/products").permitAll() // Permite GET en los endpoints para poder ver categorías y productos desde la landing
                         .anyRequest().authenticated() // Todas las demás solicitudes requieren autenticación
                 )
                 .sessionManagement(session -> session
@@ -59,7 +60,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

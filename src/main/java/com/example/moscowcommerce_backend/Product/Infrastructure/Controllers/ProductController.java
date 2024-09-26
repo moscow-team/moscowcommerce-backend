@@ -1,18 +1,12 @@
 package com.example.moscowcommerce_backend.Product.Infrastructure.Controllers;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.example.moscowcommerce_backend.Shared.Application.StorageImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Product.Application.CreateProductService;
@@ -37,14 +31,15 @@ public class ProductController {
     private final ICategoryRepository categoryRepository;
     private final DeleteProductService deleteProductService;
     private final UnarchivedProduct unarchivedProduct;
+    private final StorageImage storageImage;
 
     public ProductController(
-            CreateProductService createProductService, 
-            ListProductService listProductService, 
+            CreateProductService createProductService,
+            ListProductService listProductService,
             UpdateProductService updateProductService,
             ICategoryRepository categoryRepository,
             DeleteProductService deleteProductService,
-            UnarchivedProduct unarchivedProduct
+            UnarchivedProduct unarchivedProduct, StorageImage storageImage
     ) {
         this.createProductService = createProductService;
         this.listProductService = listProductService;
@@ -52,14 +47,17 @@ public class ProductController {
         this.categoryRepository = categoryRepository;
         this.deleteProductService = deleteProductService;
         this.unarchivedProduct = unarchivedProduct;
+        this.storageImage = storageImage;
     }
 
     // Endpoint para crear un producto
-    @PostMapping
-    public ResponseEntity<Result<ResultProductDTO>> createProduct(@RequestBody CreateProductDTO product) {
-        System.out.println("CreateProductDTO received: " + product);
+    @PostMapping(value="", consumes="multipart/form-data")
+    public ResponseEntity<Result<ResultProductDTO>> createProduct(@ModelAttribute CreateProductDTO createProductDTO) {
         try {
-            Product productToSave = ProductMapper.toDomainFromDTO(product, categoryRepository);
+            var storageResult = storageImage.HandleImage(createProductDTO.getPhotos());
+            createProductDTO.setUrlPhotos(storageResult);
+            createProductDTO.setPhotos(null);
+            Product productToSave = ProductMapper.toDomainFromDTO(createProductDTO, categoryRepository);
             ProductEntity productSaved = this.createProductService.create(productToSave);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productSaved);
             return new ResponseEntity<>(Result.success(productDTO, "Producto creado con éxito."), HttpStatus.CREATED);
@@ -104,6 +102,9 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Result<ResultProductDTO>> updateProduct(@RequestBody UpdateProductDTO product, @PathVariable Integer id) {
         try {
+            var storageResult = storageImage.HandleImage(product.getPhotos());
+            product.setUrlPhotos(storageResult);
+            product.setPhotos(null);
             Product productToUpdate = ProductMapper.toDomainFromUpdateDTO(product, id, categoryRepository);
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productUpdated);

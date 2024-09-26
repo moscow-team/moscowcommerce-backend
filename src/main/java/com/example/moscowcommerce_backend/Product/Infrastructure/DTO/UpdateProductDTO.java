@@ -5,6 +5,7 @@ import java.util.List;
 
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UpdateProductDTO {
@@ -12,6 +13,7 @@ public class UpdateProductDTO {
     private String description;
     private double price;
     private int stock;
-    private Integer categoryId;
-    private List<String> urlPhotos = new ArrayList<>();
+    public String categoryId;
+    public List<String> urlPhotos = new ArrayList<>();
+    public List<MultipartFile> photos;
 }
