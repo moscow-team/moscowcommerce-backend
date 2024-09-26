@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class UpdateUserDTO {
-    @NotNull(message = "El id no puede estar vacio")
     private Integer id;
     
     @Email(message = "El email no es valido")

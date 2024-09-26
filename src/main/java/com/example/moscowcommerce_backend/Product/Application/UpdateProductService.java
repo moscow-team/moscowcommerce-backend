@@ -1,5 +1,6 @@
 package com.example.moscowcommerce_backend.Product.Application;
 
+import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
 import com.example.moscowcommerce_backend.Product.Application.interfaces.IUpdateProductService;
 import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
@@ -34,12 +35,18 @@ public class UpdateProductService implements IUpdateProductService {
 
         ProductEntity existingProduct = existingProductOpt.get();
 
+        String name = updateProduct.getName() != null ? updateProduct.getName() : existingProduct.getName();
+        String description = updateProduct.getDescription() != null ? updateProduct.getDescription() : existingProduct.getDescription();
+        Integer stock = updateProduct.getStock() != null ? updateProduct.getStock() : existingProduct.getStock();
+        Double price = updateProduct.getPrice() != null ? updateProduct.getPrice() : existingProduct.getPrice();
+        Category category  = updateProduct.getCategory() != null ? updateProduct.getCategory() : CategoryMapper.toDomainFromEntity(existingProduct.getCategory());
+
         // Actualizar los atributos del producto existente
-        existingProduct.setName(updateProduct.getName());
-        existingProduct.setDescription(updateProduct.getDescription());
-        existingProduct.setPrice(updateProduct.getPrice());
-        existingProduct.setStock(updateProduct.getStock());
-        existingProduct.setCategory(CategoryMapper.toEntity(updateProduct.getCategory()));
+        existingProduct.setName(name);
+        existingProduct.setDescription(description);
+        existingProduct.setPrice(price);
+        existingProduct.setStock(stock);
+        existingProduct.setCategory(CategoryMapper.toEntity(category));
 
         // Limpiar las fotos existentes y agregar las nuevas solo si se proporcionan
         if (updateProduct.getPhotos() != null && !updateProduct.getPhotos().isEmpty()) {
