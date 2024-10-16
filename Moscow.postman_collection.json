@@ -1,0 +1,383 @@
+{
+	"info": {
+		"_postman_id": "95f73d6a-dfee-45ab-9c5a-f2c8232af4b5",
+		"name": "Moscow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28560452"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Crer Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"stefano bortolin2\",\r\n    \"email\": \"stef2@gmail.com\",\r\n    \"password\": \"Stef1234\",\r\n    \"role\":  \"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Editar usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"stef bortolinm2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/users/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Recuperar contraseña",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyOTA0NDE3OCwiZXhwIjoxNzY1MDQ0MTc4fQ.Z3gxwSa9V3HTUzlza9jRt-9CGENd-JPgoKMlMiAJuNw"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stef@gmail.com\",\r\n    \"old_password\": \"Stef1234\",\r\n    \"new_password\": \"Stef12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/users/password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Log In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.status === \"OK\") {\r",
+									"    const token = pm.response.json().data.token\r",
+									"    pm.collectionVariables.set(\"AUTH_TOKEN\", token)\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stef@gmail.com\",\r\n    \"password\": \"Stef1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Obtener categorias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/category"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear categorias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"catego\",\r\n   \"description\": \"catt\"  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/category"
+					},
+					"response": []
+				},
+				{
+					"name": "Editar categorias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"categor editada\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/category/4"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar categorias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{AUTH_TOKEN}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/category/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Desarchivar categoria",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{AUTH_TOKEN}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": "http://localhost:8080/category/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Create product",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-length": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Matesito\",\r\n    \"stock\": 3,\r\n    \"urlPhotos\": [],\r\n    \"price\": 555,\r\n    \"description\": \"sito\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/products"
+					},
+					"response": []
+				},
+				{
+					"name": "List product",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/products"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMwNTQwNCwiZXhwIjoxNzI3MzA5MDA0fQ.4bjaCM9B8c-1eSzHx_AAgDbrw-4HcZyQtdDUF-B0a8I"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/products/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMxMDEwNCwiZXhwIjoxNzI3MzEzNzA0fQ.1htZpVupbA2_667iv9Nd0OmTW-FWcOKiJk9bvXKuWUE"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"descripcion\",\r\n    \"name\": \"Mate editaded\",\r\n    \"categoryId\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/products/4"
+					},
+					"response": []
+				},
+				{
+					"name": "Desarchivar producto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGVmQGdtYWlsLmNvbSIsImlhdCI6MTcyNzMwNTQwNCwiZXhwIjoxNzI3MzA5MDA0fQ.4bjaCM9B8c-1eSzHx_AAgDbrw-4HcZyQtdDUF-B0a8I"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": "http://localhost:8080/products/2"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "AUTH_TOKEN",
+			"value": ""
+		}
+	]
+}
