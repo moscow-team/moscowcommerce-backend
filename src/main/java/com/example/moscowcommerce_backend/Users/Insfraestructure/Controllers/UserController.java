@@ -27,6 +27,7 @@ import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMap
 
 import jakarta.validation.Valid;
 
+import com.example.moscowcommerce_backend.Users.Domain.Exceptions.PasswordDoesNotMatchException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserAlreadyExistsException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Domain.User;
@@ -106,14 +107,12 @@ public class UserController {
     @PostMapping("/password")
     public ResponseEntity<Result<ResultUserDTO>> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
         try {
-            String email = resetPasswordDTO.getEmail();
-            String oldPassword = resetPasswordDTO.getOld_password();
-            String newPassword = resetPasswordDTO.getNew_password();
-
-            ResultUserDTO userResult = this.resetPasswordService.resetPassword(email, oldPassword, newPassword);
+            ResultUserDTO userResult = this.resetPasswordService.resetPassword(resetPasswordDTO);
 
             return new ResponseEntity<>(Result.success(userResult, "Contraseña modificada con éxito"), HttpStatus.OK);
         } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (PasswordDoesNotMatchException e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

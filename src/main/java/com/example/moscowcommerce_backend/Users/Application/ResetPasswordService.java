@@ -8,6 +8,7 @@ import com.example.moscowcommerce_backend.Users.Application.Interfaces.IResetPas
 import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.PasswordDoesNotMatchException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
@@ -25,7 +26,11 @@ public class ResetPasswordService implements IResetPassword {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResultUserDTO resetPassword(String email, String oldPassword, String newPassword) {
+    public ResultUserDTO resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        String email = resetPasswordDTO.getEmail();
+        String oldPassword = resetPasswordDTO.getOld_password();
+        String newPassword = resetPasswordDTO.getNew_password();
+
         Optional<UserEntity> userExists = this.userRepository.findByEmail(email);
 
         UserEntity userEntity = userExists.orElseThrow(() -> new UserNotFoundException(email));
