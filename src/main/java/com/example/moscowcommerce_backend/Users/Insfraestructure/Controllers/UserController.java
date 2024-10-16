@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
 import com.example.moscowcommerce_backend.Users.Application.CreateUserService;
 import com.example.moscowcommerce_backend.Users.Application.ListUserService;
+import com.example.moscowcommerce_backend.Users.Application.ResetPasswordService;
 import com.example.moscowcommerce_backend.Users.Application.UpdateUserService;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.UpdateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
@@ -37,19 +39,21 @@ public class UserController {
     private final ListUserService listUserService;
     private final PasswordEncoder passwordEncoder;
     private final UpdateUserService updateUserService;
+    private final ResetPasswordService resetPasswordService;
 
     // Inyección del servicio mediante el constructor
     @Autowired
     public UserController(
-        CreateUserService createUserService,
-        ListUserService listUserService,
-        PasswordEncoder passwordEncoder,
-        UpdateUserService updateUserService
-        ) {
+            CreateUserService createUserService,
+            ListUserService listUserService,
+            PasswordEncoder passwordEncoder,
+            UpdateUserService updateUserService,
+            ResetPasswordService resetPasswordService) {
         this.createUserService = createUserService;
         this.listUserService = listUserService;
         this.passwordEncoder = passwordEncoder;
         this.updateUserService = updateUserService;
+        this.resetPasswordService = resetPasswordService;
     }
 
     // Endpoint para crear un usuario
@@ -80,14 +84,15 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Result<ResultUserDTO>> updateUser(@Valid @RequestBody UpdateUserDTO userToUpdateDTO, @PathVariable Integer id) {
+    public ResponseEntity<Result<ResultUserDTO>> updateUser(@Valid @RequestBody UpdateUserDTO userToUpdateDTO,
+            @PathVariable Integer id) {
         try {
-            if(userToUpdateDTO.getPassword() != null && !userToUpdateDTO.getPassword().isEmpty()) {
+            if (userToUpdateDTO.getPassword() != null && !userToUpdateDTO.getPassword().isEmpty()) {
                 userToUpdateDTO.setPassword(this.passwordEncoder.encode(userToUpdateDTO.getPassword()));
             }
             userToUpdateDTO.setId(id);
             User userDomain = UserMapper.updateDTOToUserDomain(userToUpdateDTO);
-            
+
             ResultUserDTO userResult = this.updateUserService.update(userDomain);
 
             return new ResponseEntity<>(Result.success(userResult, "Usuario actualizado con éxito"), HttpStatus.OK);
@@ -97,5 +102,21 @@ public class UserController {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-}
 
+    @PostMapping("/password")
+    public ResponseEntity<Result<ResultUserDTO>> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        try {
+            String email = resetPasswordDTO.getEmail();
+            String oldPassword = resetPasswordDTO.getOld_password();
+            String newPassword = resetPasswordDTO.getNew_password();
+
+            ResultUserDTO userResult = this.resetPasswordService.resetPassword(email, oldPassword, newPassword);
+
+            return new ResponseEntity<>(Result.success(userResult, "Contraseña modificada con éxito"), HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
