@@ -40,7 +40,7 @@ public abstract class CriteriaRepositoryAdapter<T, R> implements ICriteriaReposi
     private Predicate buildPredicate(Filter filter, CriteriaBuilder criteriaBuilder, Root<T> root) {
         String field = filter.getField();
         String value = filter.getValue();
-        String operator = filter.getOperator();
+        String operator = filter.getOperator().getValue();
 
         // Detectar si el campo pertenece a una relación
         if (field.contains(".")) {

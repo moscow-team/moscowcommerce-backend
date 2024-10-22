@@ -57,6 +57,21 @@ public class CategoryMapper {
         return ResultCategoryDTO.create(categoryEntity.getId(), categoryEntity.getName(), categoryEntity.getDescription(), creationDate, modificationDate, archived, archivedDate);
     }
 
+    public static ResultCategoryDTO toResultFromDomain(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        String archivedDate = category.getArchivedDate() != null ? category.getArchivedDate().toString() : "";
+        String creationDate = category.getCreationDate() != null ? category.getCreationDate().toString() : "";
+        String modificationDate = category.getModificationDate() != null ? category.getModificationDate().toString() : "";
+
+        // Determinar si el producto está archivado
+        boolean archived = category.getArchivedDate() != null;
+
+        return ResultCategoryDTO.create(category.getId(), category.getName(), category.getDescription(), creationDate, modificationDate, archived, archivedDate);
+    }
+
     public static Category toDomainFromUpdateDTO(UpdateCategoryDTO categoryDTO, Integer id) {
         return new Category(id, categoryDTO.getName(), categoryDTO.getDescription());
     }

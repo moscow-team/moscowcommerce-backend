@@ -72,11 +72,11 @@ public class ProductMapper {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
-            CategoryEntity categoryEntity = categoryOptional.get();
+            CategoryEntity categoryEntity = CategoryMapper.toEntity(categoryOptional.get());
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity); 
         }
         
@@ -200,11 +200,12 @@ public class ProductMapper {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
-            CategoryEntity categoryEntity = categoryOptional.get();
+
+            CategoryEntity categoryEntity = CategoryMapper.toEntity(categoryOptional.get());
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity);
         }
 

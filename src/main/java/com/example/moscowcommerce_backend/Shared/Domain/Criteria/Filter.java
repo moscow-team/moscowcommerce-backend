@@ -3,12 +3,12 @@ package com.example.moscowcommerce_backend.Shared.Domain.Criteria;
 public class Filter {
     private String field;
     private String value;
-    private String operator;
+    private OperatorValueObject operator;
 
     private Filter(String field, String value, String operator) {
         this.field = field;
         this.value = value;
-        this.operator = operator;
+        this.operator = OperatorValueObject.create(operator);
     }
 
     public static Filter create(String field, String value, String operator) {
@@ -27,7 +27,7 @@ public class Filter {
         return value;
     }
 
-    public String getOperator() {
+    public OperatorValueObject getOperator() {
         return operator;
     }
 }

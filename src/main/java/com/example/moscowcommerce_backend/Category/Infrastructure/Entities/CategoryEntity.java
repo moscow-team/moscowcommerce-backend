@@ -1,6 +1,10 @@
 package com.example.moscowcommerce_backend.Category.Infrastructure.Entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -31,6 +35,9 @@ public final class CategoryEntity {
 
     @Column(nullable = true, columnDefinition = "DATE")
     private LocalDate archivedDate;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductEntity> products = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
