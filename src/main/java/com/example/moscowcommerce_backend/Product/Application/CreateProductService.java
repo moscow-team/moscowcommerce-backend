@@ -21,6 +21,7 @@ public class CreateProductService implements ICreateProductService {
 
     @Override
     public ProductEntity create(Product product) {
+        System  .out.println("CreateProductService.create");
         // Esta validacion se podria obviar ya que la base de datos no permite generar
         // dos usuarios con el mismo email,
         // de esta forma manejamos nosotros la excepcion

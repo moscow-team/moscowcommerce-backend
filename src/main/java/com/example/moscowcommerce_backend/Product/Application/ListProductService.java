@@ -11,6 +11,7 @@ import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductNotFoundException;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
+import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Criteria;
 
 @Service
 public class ListProductService implements IListProductService {
@@ -43,6 +44,11 @@ public class ListProductService implements IListProductService {
         }
 
         return ProductMapper.toDomainFromEntity(product.get());
+    }
+
+    @Override
+    public List<Product> findByCriteria(Criteria criteria) {
+        return repository.findByCriteria(criteria);
     }
     
 }

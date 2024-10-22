@@ -162,6 +162,40 @@ public class ProductMapper {
         );
     }
 
+    public static ResultProductDTO toResultFromDomain(Product productDomain) {
+        if (productDomain == null) {
+            return null;
+        }
+
+        String price = String.valueOf(productDomain.getPrice());
+        String stock = String.valueOf(productDomain.getStock());
+
+        // Obtener el objeto Category
+        Category category = productDomain.getCategory();
+
+        List<String> photoUrls = productDomain.getPhotos().stream()
+                .map(ProductPhoto::getUrlPhoto)
+                .collect(Collectors.toList());
+
+        String archivedDate = productDomain.getArchivedDate() != null ? productDomain.getArchivedDate().toString() : "";
+
+        // Determinar si el producto está archivado
+        boolean archived = productDomain.getArchivedDate() != null;
+
+        return ResultProductDTO.create(
+            productDomain.getId(),
+            productDomain.getName(),
+            productDomain.getDescription(),
+            price,
+            stock,
+            category,
+            photoUrls,
+            archived,
+            archivedDate
+        );
+    }
+
+
     public static Product toDomainFromUpdateDTO(UpdateProductDTO productDTO, Integer id, ICategoryRepository categoryRepository) {
         Category categoryDomain = null;
 
