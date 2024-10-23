@@ -8,8 +8,6 @@ import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Category.Domain.Exceptions.CategoryIsNotArchived;
 import com.example.moscowcommerce_backend.Category.Domain.Exceptions.CategoryNotFoundException;
-import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
-import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
 
 @Service
 public class UnarchivedCategory implements IUnarchivedCategoryService{
@@ -21,10 +19,8 @@ public class UnarchivedCategory implements IUnarchivedCategoryService{
     }
 
     @Override
-    public CategoryEntity execute(Integer id) {
-        CategoryEntity categoryEntity = repository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found"));
-
-        Category category = CategoryMapper.toDomainFromEntity(categoryEntity);
+    public Category execute(Integer id) {
+        Category category = repository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found"));
         
         if (!category.isArchived()) {
             throw new CategoryIsNotArchived("La categpria no esta archivada");
@@ -32,8 +28,6 @@ public class UnarchivedCategory implements IUnarchivedCategoryService{
 
         category.unarchived();
 
-        CategoryEntity categoryToUnarchive = CategoryMapper.toEntity(category);
-
-        return repository.save(categoryToUnarchive);
+        return repository.save(category);
     }
 }

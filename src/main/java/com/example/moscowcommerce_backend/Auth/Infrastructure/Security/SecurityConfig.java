@@ -39,7 +39,7 @@ public class SecurityConfig {
                                                                                 // autenticación
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll() // Permitir POST en /login sin
                                                                                      // autenticación
-                        .requestMatchers(HttpMethod.GET,"/category", "/products").permitAll() // Permite GET en los endpoints para poder ver categorías y productos desde la landing
+                        .requestMatchers(HttpMethod.GET,"/category", "/products", "/products/filters").permitAll() // Permite GET en los endpoints para poder ver categorías y productos desde la landing
                         
                         .requestMatchers(HttpMethod.POST, "/users/password").permitAll() // Permitir POST en /users/password sin auth, ya que el usuario no esta logeado cuando recupera contraseña
                                                                                      

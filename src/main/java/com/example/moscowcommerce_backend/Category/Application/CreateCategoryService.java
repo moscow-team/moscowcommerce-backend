@@ -4,9 +4,6 @@ import com.example.moscowcommerce_backend.Category.Application.Interfaces.ICreat
 import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Category.Domain.Exceptions.CategoryAlreadyExist;
-import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
-import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +22,12 @@ public final class CreateCategoryService implements ICreateCategoryService {
     }
 
     @Override
-    public CategoryEntity create(Category category) {
+    public Category create(Category category) {
         Boolean existCategory = this.listCategoryService.existCategoryByName(category.getName());
         if (existCategory) {
             throw new CategoryAlreadyExist("Ya existe una categoría con el nombre " + category.getName());
         }
 
-        CategoryEntity categoryEntity = CategoryMapper.toEntity(category);
-
-        return this.repository.save(categoryEntity);
+        return this.repository.save(category);
     }
 }

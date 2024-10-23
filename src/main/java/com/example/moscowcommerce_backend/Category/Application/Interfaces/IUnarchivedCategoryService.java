@@ -1,7 +1,7 @@
 package com.example.moscowcommerce_backend.Category.Application.Interfaces;
 
-import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
+import com.example.moscowcommerce_backend.Category.Domain.Category;
 
 public interface IUnarchivedCategoryService {
-    public CategoryEntity execute(Integer id);
+    public Category execute(Integer id);
 }

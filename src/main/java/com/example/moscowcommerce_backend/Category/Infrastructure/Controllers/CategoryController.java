@@ -5,11 +5,14 @@ import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.CreateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.ResultCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.UpdateCategoryDTO;
-import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
+import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Criteria;
+import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Filter;
 import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
+import com.example.moscowcommerce_backend.Shared.Infrastructure.Utils;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,8 +46,8 @@ public class CategoryController {
     public ResponseEntity<Result<ResultCategoryDTO>> createCategory(@RequestBody CreateCategoryDTO category) {
         try {
             Category categoryToSave = CategoryMapper.toDomainFromDTO(category);
-            CategoryEntity categorySaved = this.createCategoryService.create(categoryToSave);
-            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(categorySaved);
+            Category categorySaved = this.createCategoryService.create(categoryToSave);
+            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(categorySaved);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria creada con éxito"), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,8 +57,8 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<Result<List<ResultCategoryDTO>>> getAll() {
         try {
-            List<CategoryEntity> categories = this.listCategoryService.execute();
-            List<ResultCategoryDTO> categoriesDTO = categories.stream().map(category -> CategoryMapper.toResultFromEntity(category)).toList();
+            List<Category> categories = this.listCategoryService.execute();
+            List<ResultCategoryDTO> categoriesDTO = categories.stream().map(category -> CategoryMapper.toResultFromDomain(category)).toList();
             return new ResponseEntity<>(Result.success(categoriesDTO, "Categorias obtenidas con éxito"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,8 +68,8 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Result<ResultCategoryDTO>> deleteCategory(@PathVariable Integer id) {
         try {
-            CategoryEntity category = this.deleteCategoryService.execute(id);
-            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(category);
+            Category category = this.deleteCategoryService.execute(id);
+            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(category);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria eliminada con éxito"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,8 +79,8 @@ public class CategoryController {
     @PatchMapping("/{id}")
     public ResponseEntity<Result<ResultCategoryDTO>> unarchivedCategory(@PathVariable Integer id) {
         try {
-            CategoryEntity category = this.unarchivedCategory.execute(id);
-            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(category);
+            Category category = this.unarchivedCategory.execute(id);
+            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(category);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria desarchivada con éxito"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -88,9 +91,25 @@ public class CategoryController {
     public ResponseEntity<Result<ResultCategoryDTO>> updateCategory(@RequestBody UpdateCategoryDTO category, @PathVariable Integer id) {
         try {
             Category categoryToUpdate = CategoryMapper.toDomainFromUpdateDTO(category, id);
-            CategoryEntity categoryUpdated = this.updateCategoryService.updateCategory(categoryToUpdate);
-            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromEntity(categoryUpdated);
+            Category categoryUpdated = this.updateCategoryService.updateCategory(categoryToUpdate);
+            ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(categoryUpdated);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria actualizada con éxito"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Get by Criteria
+    @GetMapping("/filters")
+    public ResponseEntity<Result<List<ResultCategoryDTO>>> getByCriteria(@RequestParam Map<String, String> params) {
+        try {
+            List<Filter> filters = Utils.getFiltersFromParams(params);
+            Criteria criteria = Criteria.create(filters);
+
+            List<Category> categories = this.listCategoryService.findByCriteria(criteria);
+
+            List<ResultCategoryDTO> categoriesDTO = categories.stream().map(category -> CategoryMapper.toResultFromDomain(category)).toList();
+            return new ResponseEntity<>(Result.success(categoriesDTO, "Categorias obtenidas con éxito"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -1,13 +1,13 @@
 package com.example.moscowcommerce_backend.Category.Domain;
 
-import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.moscowcommerce_backend.Shared.Domain.Ports.ICriteriaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ICategoryRepository extends JpaRepository<CategoryEntity, Integer> {
-    public List<CategoryEntity>  findAll();
-    public Optional<CategoryEntity> findByNameIgnoreCase(String name);
-    public Optional<CategoryEntity> save(Category categoryDomain);
+public interface ICategoryRepository extends ICriteriaRepository<Category> {
+    public List<Category>  findAll();
+    public Optional<Category> findByNameIgnoreCase(String name);
+    public Category save(Category categoryDomain);
+    public Optional<Category> findById(Integer id);
 }
