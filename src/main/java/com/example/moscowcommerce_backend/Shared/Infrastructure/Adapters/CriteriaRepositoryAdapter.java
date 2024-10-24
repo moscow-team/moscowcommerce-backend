@@ -19,7 +19,6 @@ public abstract class CriteriaRepositoryAdapter<T, R> implements ICriteriaReposi
         this.entityManager = entityManager;
     }
 
-    
     public List<R> findByCriteria(Criteria criteria, Class<T> entityClass) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = criteriaBuilder.createQuery(entityClass);
@@ -64,10 +63,21 @@ public abstract class CriteriaRepositoryAdapter<T, R> implements ICriteriaReposi
     // Método auxiliar para crear el Predicate según el operador
     private Predicate createPredicate(CriteriaBuilder criteriaBuilder, Path<String> path, String value,
             String operator) {
+        // Si el valor es "null" o "NULL", entonces se trata de una comparación con nulo
+        // printeamo el valor de path, operator y value
+
+        if (value.equalsIgnoreCase("null")) {
+            if (operator.equalsIgnoreCase("=")) {
+                return criteriaBuilder.isNull(path);
+            } else {
+                return criteriaBuilder.isNotNull(path);
+            }
+        }
+
         switch (operator) {
             case "=":
                 return criteriaBuilder.equal(path, value);
-            case "like":
+            case "LIKE":
                 return criteriaBuilder.like(path, "%" + value + "%");
             case "<":
                 return criteriaBuilder.lessThan(path, value);
@@ -77,6 +87,10 @@ public abstract class CriteriaRepositoryAdapter<T, R> implements ICriteriaReposi
                 return criteriaBuilder.greaterThan(path, value);
             case ">=":
                 return criteriaBuilder.greaterThanOrEqualTo(path, value);
+            case "!=":
+                return criteriaBuilder.notEqual(path, value);
+            case "IN":
+                return path.in(value);
             default:
                 throw new IllegalArgumentException("Operador no soportado: " + operator);
         }
