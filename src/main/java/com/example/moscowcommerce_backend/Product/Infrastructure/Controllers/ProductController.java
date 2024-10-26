@@ -118,7 +118,6 @@ public class ProductController {
                 var storageResult = storageImage.HandleImage(product.getPhotos());
                 product.setUrlPhotos(storageResult);
             }
-            product.setPhotos(null);
             Product productToUpdate = ProductMapper.toDomainFromUpdateDTO(product, id, categoryRepository);
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productUpdated);

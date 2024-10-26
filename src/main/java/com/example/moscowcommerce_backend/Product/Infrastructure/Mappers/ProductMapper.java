@@ -209,9 +209,28 @@ public class ProductMapper {
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity);
         }
 
-        List<ProductPhoto> photos = productDTO.getUrlPhotos().stream()
-                .map(url -> new ProductPhoto(url))
-                .collect(Collectors.toList());
+        List<ProductPhoto> photos = new ArrayList<>();
+
+        // Agregar fotos existentes
+        if (productDTO.getExistingPhotos() != null) {
+            photos.addAll(productDTO.getExistingPhotos().stream()
+                    .map(url -> new ProductPhoto(url))
+                    .collect(Collectors.toList()));
+        }
+
+        // Agregar nuevas fotos
+        if (productDTO.getUrlPhotos() != null) {
+            photos.addAll(productDTO.getUrlPhotos().stream()
+                    .map(url -> new ProductPhoto(url))
+                    .collect(Collectors.toList()));
+        }
+
+        // Agregar fotos a eliminar
+        if (productDTO.getPhotosToDelete() != null) {
+            for (String photoUrl : productDTO.getPhotosToDelete()) {
+                photos.removeIf(photo -> photo.getUrlPhoto().equals(photoUrl));
+            }
+        }
 
         return new Product(
             id,

@@ -78,7 +78,7 @@ public abstract class CriteriaRepositoryAdapter<T, R> implements ICriteriaReposi
             case "=":
                 return criteriaBuilder.equal(path, value);
             case "LIKE":
-                return criteriaBuilder.like(path, "%" + value + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(path), "%" + value.toString().toLowerCase() + "%");
             case "<":
                 return criteriaBuilder.lessThan(path, value);
             case "<=":
