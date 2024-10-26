@@ -225,6 +225,13 @@ public class ProductMapper {
                     .collect(Collectors.toList()));
         }
 
+        // Agregar fotos a eliminar
+        if (productDTO.getPhotosToDelete() != null) {
+            for (String photoUrl : productDTO.getPhotosToDelete()) {
+                photos.removeIf(photo -> photo.getUrlPhoto().equals(photoUrl));
+            }
+        }
+
         return new Product(
             id,
             productDTO.getName(),

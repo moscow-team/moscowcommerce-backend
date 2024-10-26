@@ -17,4 +17,5 @@ public class UpdateProductDTO {
     public List<String> urlPhotos = new ArrayList<>(); // Lista para fotos nuevas
     public List<MultipartFile> photos;
     public List<String> existingPhotos = new ArrayList<>(); // Lista para fotos existentes
+    public List<String> photosToDelete = new ArrayList<>(); // Lista para fotos a eliminar
 }
