@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
+import com.example.moscowcommerce_backend.Users.Application.ArchivedUserService;
 import com.example.moscowcommerce_backend.Users.Application.CreateUserService;
 import com.example.moscowcommerce_backend.Users.Application.ListUserService;
 import com.example.moscowcommerce_backend.Users.Application.ResetPasswordService;
+import com.example.moscowcommerce_backend.Users.Application.UnarchivedUserService;
 import com.example.moscowcommerce_backend.Users.Application.UpdateUserService;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
@@ -41,6 +45,8 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UpdateUserService updateUserService;
     private final ResetPasswordService resetPasswordService;
+    private final ArchivedUserService archivedUserService;
+    private final UnarchivedUserService unarchivedUserService;
 
     // Inyección del servicio mediante el constructor
     @Autowired
@@ -49,12 +55,16 @@ public class UserController {
             ListUserService listUserService,
             PasswordEncoder passwordEncoder,
             UpdateUserService updateUserService,
-            ResetPasswordService resetPasswordService) {
+            ResetPasswordService resetPasswordService,
+            ArchivedUserService archivedUserService,
+            UnarchivedUserService unarchivedUserService) {
         this.createUserService = createUserService;
         this.listUserService = listUserService;
         this.passwordEncoder = passwordEncoder;
         this.updateUserService = updateUserService;
         this.resetPasswordService = resetPasswordService;
+        this.archivedUserService = archivedUserService;
+        this.unarchivedUserService = unarchivedUserService;
     }
 
     // Endpoint para crear un usuario
@@ -118,4 +128,31 @@ public class UserController {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Result<ResultUserDTO>> deleteUser(@PathVariable Integer id) {
+        try {
+            User userResult = this.archivedUserService.archive(id);
+
+            return new ResponseEntity<>(Result.success(UserMapper.toResultFromDomain(userResult), "Usuario eliminado con éxito"), HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Result<ResultUserDTO>> unarchivedUser(@PathVariable Integer id) {
+        try {
+            User userResult = this.unarchivedUserService.unarchive(id);
+
+            return new ResponseEntity<>(Result.success(UserMapper.toResultFromDomain(userResult), "Usuario desarchivado con éxito"), HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

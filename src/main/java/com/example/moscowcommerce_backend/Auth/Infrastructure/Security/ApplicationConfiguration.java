@@ -1,6 +1,7 @@
 package com.example.moscowcommerce_backend.Auth.Infrastructure.Security;
 
-import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Ports.IUserRepositoryJPA;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +15,9 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class ApplicationConfiguration {
-    private final IUserRepository userRepository;
+    private final IUserRepositoryJPA userRepository;
 
-    public ApplicationConfiguration(IUserRepository userRepository) {
+    public ApplicationConfiguration(IUserRepositoryJPA userRepository) {
         this.userRepository = userRepository;
     }
 

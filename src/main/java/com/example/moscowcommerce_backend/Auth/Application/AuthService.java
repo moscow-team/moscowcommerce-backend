@@ -1,6 +1,7 @@
 package com.example.moscowcommerce_backend.Auth.Application;
 
 import com.example.moscowcommerce_backend.Auth.Application.Interfaces.IAuthService;
+import com.example.moscowcommerce_backend.Auth.Domain.Exceptions.UserArchivedException;
 import com.example.moscowcommerce_backend.Auth.Infrastructure.DTO.LogInDTO;
 import com.example.moscowcommerce_backend.Users.Application.ListUserService;
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IListUserService;
@@ -30,13 +31,21 @@ public class AuthService implements IAuthService {
     public UserEntity authenticate(@Valid LogInDTO logInDTO) {
         try {
             User user = this.listUserService.findByEmail(logInDTO.getEmail());
+
+            if (user.isArchived()) {
+                throw new UserArchivedException(user.getEmail());
+            }
+            
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             logInDTO.getEmail(),
                             logInDTO.getPassword()));
 
             return UserMapper.toEntity(user);
-        } catch (Exception e) {
+        } catch (UserArchivedException e) {
+            throw e;
+        }
+         catch (Exception e) {
             return null;
         }
     }

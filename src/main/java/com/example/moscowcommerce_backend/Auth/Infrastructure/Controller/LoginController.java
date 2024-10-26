@@ -1,6 +1,7 @@
 package com.example.moscowcommerce_backend.Auth.Infrastructure.Controller;
 
 import com.example.moscowcommerce_backend.Auth.Application.AuthService;
+import com.example.moscowcommerce_backend.Auth.Domain.Exceptions.UserArchivedException;
 import com.example.moscowcommerce_backend.Auth.Infrastructure.DTO.LogInDTO;
 import com.example.moscowcommerce_backend.Auth.Infrastructure.DTO.ResultLogInDTO;
 import com.example.moscowcommerce_backend.Auth.Infrastructure.Mappers.LogInMapper;
@@ -43,6 +44,8 @@ public class LoginController {
             ResultLogInDTO resultLogInDTO = LogInMapper.toResult(user, jwtToken);
 
             return new ResponseEntity<>(Result.success(resultLogInDTO, "Usuario autenticado con éxito"), HttpStatus.OK);
+        } catch (UserArchivedException e) {
+            return new ResponseEntity<>(Result.failure("Usuario archivado"), HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
         } 
