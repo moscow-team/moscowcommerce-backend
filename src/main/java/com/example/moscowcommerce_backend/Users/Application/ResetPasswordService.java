@@ -6,11 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IResetPassword;
 import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
+import com.example.moscowcommerce_backend.Users.Domain.User;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.PasswordDoesNotMatchException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
-import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
 
 import java.util.Optional;
@@ -31,9 +31,9 @@ public class ResetPasswordService implements IResetPassword {
         String oldPassword = resetPasswordDTO.getOld_password();
         String newPassword = resetPasswordDTO.getNew_password();
 
-        Optional<UserEntity> userExists = this.userRepository.findByEmail(email);
+        Optional<User> userExists = this.userRepository.findByEmail(email);
 
-        UserEntity userEntity = userExists.orElseThrow(() -> new UserNotFoundException(email));
+        User userEntity = userExists.orElseThrow(() -> new UserNotFoundException(email));
 
         if (!passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
             throw new PasswordDoesNotMatchException(oldPassword);
@@ -41,9 +41,9 @@ public class ResetPasswordService implements IResetPassword {
 
         userEntity.setPassword(this.passwordEncoder.encode(newPassword));
 
-        this.userRepository.save(userEntity);
+        User userSaved = this.userRepository.save(userEntity);
 
-        ResultUserDTO userDTO = UserMapper.toResultFromEntity(userEntity);
+        ResultUserDTO userDTO = UserMapper.toResultFromDomain(userSaved);
 
         return userDTO;
     }

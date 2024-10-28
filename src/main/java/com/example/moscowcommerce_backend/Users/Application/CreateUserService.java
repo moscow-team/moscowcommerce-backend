@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
-import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
 
 import java.util.Optional;
@@ -26,19 +25,17 @@ public final class CreateUserService implements ICreateUserService{
         // Esta validacion se podria obviar ya que la base de datos no permite generar dos usuarios con el mismo email,
         // de esta forma manejamos nosotros la excepcion
         // Primero verificamos que no exista un usuario con este email
-        Optional<UserEntity> userExist = this.repository.findByEmail(user.getEmail());
+        Optional<User> userExist = this.repository.findByEmail(user.getEmail());
 
         // Si existe, devolvemos la excepción
         if (userExist.isPresent()) {
             throw new UserAlreadyExistsException();
         }
 
-        // Mapeamos la entidad de dominio a la entidad de base de datos
-        UserEntity userEntity = UserMapper.toEntity(user);
-
         // Guardamos usuario en la BD
-        UserEntity userSaved = this.repository.save(userEntity);
+        User userSaved = this.repository.save(user);
 
-        return UserMapper.toResultFromEntity(userSaved);
+        System.out.println("Usuario guardado: " + userSaved.getCreationDate());
+        return UserMapper.toResultFromDomain(userSaved);
     }
 }

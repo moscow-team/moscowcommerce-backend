@@ -33,6 +33,7 @@ public class StorageImage {
      * @param images A list of MultipartFile objects representing the images to be uploaded.
      * @return A list of URLs of the uploaded images.
      */
+    @SuppressWarnings("unchecked")
     public List<String> HandleImage(List<MultipartFile> images) {
         // Initialize an empty list to store the URLs of the uploaded images
         List<String> photos = new ArrayList<>();

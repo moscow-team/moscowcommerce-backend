@@ -9,7 +9,6 @@ import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
-import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
 
 import java.util.Optional;;
@@ -27,21 +26,17 @@ public class UpdateUserService implements IUpdateUserService {
     @Override
     public ResultUserDTO update(User user) {
         
-        Optional<UserEntity> existingUser = repository.findById(user.getId());
+        Optional<User> existingUser = repository.findById(user.getId());
 
         if (!existingUser.isPresent()) {
            throw new UserNotFoundException(user.getId());
         }
 
-        UserEntity userEntity = UserMapper.toEntity(user);
-
-        Utils.fillNullFields(userEntity, existingUser.get());
-
-        System.out.println("email " + userEntity.getEmail());
+        Utils.fillNullFields(user, existingUser.get());
         
-        this.repository.save(userEntity);
+        this.repository.save(user);
 
-        ResultUserDTO userResult = UserMapper.toResultFromEntity(userEntity);
+        ResultUserDTO userResult = UserMapper.toResultFromDomain(user);
 
         return userResult;
     }
