@@ -13,7 +13,7 @@ import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMap
 import java.util.Optional;
 
 @Service
-public final class CreateUserService implements ICreateUserService{
+public class CreateUserService implements ICreateUserService{
     private final IUserRepository repository;
 
     @Autowired

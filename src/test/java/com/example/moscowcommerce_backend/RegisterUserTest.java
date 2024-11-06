@@ -7,25 +7,33 @@ import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserAlreadyExi
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Controllers.UserController;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class RegisterUserTest {
 
     @Mock
@@ -59,7 +67,8 @@ public class RegisterUserTest {
         CreateUserDTO dtoLongName = new CreateUserDTO("A".repeat(51), "test@example.com", "Password1", "CUSTOMER");
         Set<ConstraintViolation<CreateUserDTO>> violationsLong = validator.validate(dtoLongName);
         assertFalse(violationsLong.isEmpty());
-        assertEquals("El nombre completo debe tener entre 1 y 50 caracteres", violationsLong.iterator().next().getMessage());
+        assertEquals("El nombre completo debe tener entre 1 y 50 caracteres",
+                violationsLong.iterator().next().getMessage());
     }
 
     // Caso de prueba 2: Registro de Cliente - Longitud de Contraseña
@@ -69,13 +78,15 @@ public class RegisterUserTest {
         CreateUserDTO dtoShortPassword = new CreateUserDTO("John Doe", "test@example.com", "Short1", "CUSTOMER");
         Set<ConstraintViolation<CreateUserDTO>> violationsShort = validator.validate(dtoShortPassword);
         assertFalse(violationsShort.isEmpty());
-        assertEquals("La contraseña debe tener entre 8 y 50 caracteres", violationsShort.iterator().next().getMessage());
+        assertEquals("La contraseña debe tener entre 8 y 50 caracteres",
+                violationsShort.iterator().next().getMessage());
 
         // Contraseña de 8 caracteres que no cumple los requisitos
         CreateUserDTO dtoWeakPassword = new CreateUserDTO("John Doe", "test@example.com", "password", "CUSTOMER");
         Set<ConstraintViolation<CreateUserDTO>> violationsWeak = validator.validate(dtoWeakPassword);
         assertFalse(violationsWeak.isEmpty());
-        assertEquals("La contraseña debe tener al menos una letra mayúscula, una letra minúscula y un número", violationsWeak.iterator().next().getMessage());
+        assertEquals("La contraseña debe tener al menos una letra mayúscula, una letra minúscula y un número",
+                violationsWeak.iterator().next().getMessage());
     }
 
     // Caso exitoso de creación de usuario
@@ -83,7 +94,7 @@ public class RegisterUserTest {
     void testCreateUserSuccess() throws UserAlreadyExistsException {
         CreateUserDTO validDto = new CreateUserDTO("John Doe", "test@example.com", "Password1", "CUSTOMER");
         User user = UserMapper.toDomainFromDTO(validDto);
-        ResultUserDTO resultUserDTO = new ResultUserDTO(user.getId(), user.getEmail(), user.getFullName(), user.getRole());
+        ResultUserDTO resultUserDTO = UserMapper.toResultFromDomain(user);
 
         when(createUserService.create(any(User.class))).thenReturn(resultUserDTO);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -99,15 +110,15 @@ public class RegisterUserTest {
     // Caso de usuario ya existente
     @Test
     void testCreateUserAlreadyExists() throws UserAlreadyExistsException {
-        CreateUserDTO existingUserDto = new CreateUserDTO("Jane Doe", "existing@example.com", "Password1", "CUSTOMER");
-
-        doThrow(new UserAlreadyExistsException("El usuario ya existe")).when(createUserService).create(any(User.class));
-
+        // Arrange
+        CreateUserDTO existingUserDto = new CreateUserDTO("User Test", "test@example.com", "Password1", "ADMIN");
+        // Act
         ResponseEntity<Result<ResultUserDTO>> response = userController.createUser(existingUserDto);
 
-        assertNotNull(response);
+        // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals("El usuario ya existe", response.getBody().getMessage());
-        verify(createUserService, times(1)).create(any(User.class));
+        assertTrue(response.getBody().isFailure());
     }
 }
