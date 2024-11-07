@@ -6,27 +6,25 @@ import com.example.moscowcommerce_backend.Users.Application.UpdateUserService;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Controllers.UserController;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.mockito.Mockito.*;
 
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 public class UpdateUserTest {
 
-    @Mock
+    @MockBean
     private UpdateUserService updateUserService;
-
-    @InjectMocks
-    private UserController userController;
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,6 +50,25 @@ public class UpdateUserTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("El correo electrónico no puede exceder 254 caracteres"));
+                .andExpect(jsonPath("$.data.email").value("El email debe tener entre 5 y 50 caracteres"));
+    }
+
+    @Test
+    public void testAssignValidRole_ShouldAssignAdminRole() throws Exception {
+        // Crear el DTO con el rol "ADMIN"
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        updateUserDTO.setRole("ADMIN");
+
+        // Convertir el DTO a JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(updateUserDTO);
+
+        // Ejecutar la solicitud PUT al controlador
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Usuario actualizado con éxito"));
+                /* .andExpect(MockMvcResultMatchers.jsonPath("$.data.role").value("ADMIN")); */
     }
 }

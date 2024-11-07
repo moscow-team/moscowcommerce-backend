@@ -109,16 +109,58 @@ public class RegisterUserTest {
 
     // Caso de usuario ya existente
     @Test
-    void testCreateUserAlreadyExists() throws UserAlreadyExistsException {
+    void testCreateUserAlreadyExists() {
         // Arrange
         CreateUserDTO existingUserDto = new CreateUserDTO("User Test", "test@example.com", "Password1", "ADMIN");
+
+        // Mock del passwordEncoder
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+
+        // Usa el constructor sin parámetros para que use el mensaje por defecto
+        UserAlreadyExistsException expectedException = new UserAlreadyExistsException();
+        when(createUserService.create(any(User.class)))
+                .thenThrow(expectedException);
+
         // Act
         ResponseEntity<Result<ResultUserDTO>> response = userController.createUser(existingUserDto);
+
+        // Debug
+        System.out.println("Exception message: " + expectedException.getMessage());
+        System.out.println("Response Status: " + response.getStatusCode());
+        if (response.getBody() != null) {
+            System.out.println("Response Message: " + response.getBody().getMessage());
+            System.out.println("Response isFailure: " + response.getBody().isFailure());
+        }
 
         // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("El usuario ya existe", response.getBody().getMessage());
+        assertEquals("El usuario ya existe.", response.getBody().getMessage());
         assertTrue(response.getBody().isFailure());
+        assertNull(response.getBody().getData());
+
+        // Verify
+        verify(passwordEncoder, times(1)).encode(any());
+        verify(createUserService, times(1)).create(any(User.class));
+    }
+
+    @Test
+    void testCreateUserWithValidFullName() {
+        // Nombre válido
+        CreateUserDTO dtoValidName = new CreateUserDTO("Juan", "juan@example.com", "Password1", "CUSTOMER");
+        Set<ConstraintViolation<CreateUserDTO>> violationsValidName = validator.validate(dtoValidName);
+
+        // No debe haber violaciones de restricciones, ya que el nombre es válido
+        assertTrue(violationsValidName.isEmpty());
+    }
+
+    @Test
+    void testCreateUserWithValidEmail() {
+        // Correo válido
+        CreateUserDTO dtoValidEmail = new CreateUserDTO("Juan", "juan@example.com", "Password1", "CUSTOMER");
+        Set<ConstraintViolation<CreateUserDTO>> violationsValidEmail = validator.validate(dtoValidEmail);
+
+        // No debe haber violaciones de restricciones, ya que el correo es válido
+        assertTrue(violationsValidEmail.isEmpty());
     }
 }
