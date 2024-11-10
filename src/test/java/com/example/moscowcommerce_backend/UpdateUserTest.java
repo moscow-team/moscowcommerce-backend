@@ -68,7 +68,7 @@ public class UpdateUserTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Usuario actualizado con éxito"));
-                /* .andExpect(MockMvcResultMatchers.jsonPath("$.data.role").value("ADMIN")); */
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Usuario actualizado con éxito"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.role").value("ADMIN"));
     }
 }

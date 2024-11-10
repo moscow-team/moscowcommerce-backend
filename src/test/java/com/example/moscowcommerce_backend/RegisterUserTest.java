@@ -7,6 +7,7 @@ import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserAlreadyExi
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Controllers.UserController;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.CreateUserDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
+import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Mappers.UserMapper;
 
 import jakarta.validation.ConstraintViolation;
@@ -45,13 +46,27 @@ public class RegisterUserTest {
     @InjectMocks
     private UserController userController;
 
+
+
     private Validator validator;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        // Configurar el validador
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        // Crear y guardar el usuario en la base de datos de pruebas
+        User existingUser = new User();
+        existingUser.setFullName("Jane Doe");
+        existingUser.setEmail("test@example.com");
+        existingUser.setPassword("encodedPassword"); // Puedes usar el password encoder si es necesario
+        existingUser.setRole(Role.CUSTOMER);
+
+        // Guarda el usuario en la base de datos de pruebas
+        createUserService.create(existingUser);
     }
 
     // Caso de prueba 1: Registro de Cliente - Longitud del Nombre
@@ -163,4 +178,57 @@ public class RegisterUserTest {
         // No debe haber violaciones de restricciones, ya que el correo es válido
         assertTrue(violationsValidEmail.isEmpty());
     }
+
+      // Caso de prueba: Registro de Cliente - Correo ya existe
+      @Test
+      void testCreateUserWithExistingEmail() {
+          // Arrange
+          CreateUserDTO existingEmailDto = new CreateUserDTO("Jane Doe", "test@example.com", "Password1", "CUSTOMER");
+  
+          // Mock para simular un error de usuario ya existente
+          when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+          when(createUserService.create(any(User.class)))
+                  .thenThrow(new UserAlreadyExistsException("El usuario ya existe."));
+  
+          // Act
+          ResponseEntity<Result<ResultUserDTO>> response = userController.createUser(existingEmailDto);
+  
+          // Assert
+          assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+          assertNotNull(response.getBody());
+          assertEquals("El usuario ya existe.", response.getBody().getMessage());
+          assertTrue(response.getBody().isFailure());
+          assertNull(response.getBody().getData());
+  
+          // Verify
+          verify(passwordEncoder, times(1)).encode(any());
+          verify(createUserService, times(1)).create(any(User.class));
+      }
+  
+      // Caso de prueba: Registro de Cliente - Todos los campos válidos (Registro exitoso)
+      @Test
+      void testCreateUserWithAllValidFields() throws UserAlreadyExistsException {
+          // Arrange
+          CreateUserDTO validDto = new CreateUserDTO("Jane Doe", "jane.doe@example.com", "Password1", "CUSTOMER");
+          User user = UserMapper.toDomainFromDTO(validDto);
+          ResultUserDTO resultUserDTO = UserMapper.toResultFromDomain(user);
+  
+          // Mock de los servicios necesarios para un registro exitoso
+          when(createUserService.create(any(User.class))).thenReturn(resultUserDTO);
+          when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+  
+          // Act
+          ResponseEntity<Result<ResultUserDTO>> response = userController.createUser(validDto);
+  
+          // Assert
+          assertNotNull(response);
+          assertEquals(HttpStatus.CREATED, response.getStatusCode());
+          assertEquals("Usuario creado con éxito", response.getBody().getMessage());
+          assertFalse(response.getBody().isFailure());
+          assertEquals(resultUserDTO, response.getBody().getData());
+  
+          // Verify
+          verify(createUserService, times(1)).create(any(User.class));
+          verify(passwordEncoder, times(1)).encode(anyString());
+      }
 }

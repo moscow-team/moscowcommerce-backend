@@ -55,7 +55,56 @@ public class LoginUserTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isFailure());
         assertEquals("Usuario o contraseña incorrectos", response.getBody().getMessage());
-        
+
+        // Verificamos que el AuthService fue llamado correctamente
+        verify(authService, times(1)).authenticate(logInDTO);
+    }
+
+    // Caso de prueba: Inicio de Sesión - Usuario y contraseña correctos
+    @Test
+    void testLoginWithCorrectCredentials() {
+        // Arrange: Datos de entrada
+        String email = "juan@example.com";
+        String correctPassword = "CorrectPassword123";
+        LogInDTO logInDTO = new LogInDTO(email, correctPassword);
+
+        // Simulamos la respuesta exitosa de AuthService
+        ResultLogInDTO resultLogInDTO = new ResultLogInDTO("token123");
+        when(authService.authenticate(logInDTO)).thenReturn(Result.success(resultLogInDTO));
+
+        // Act: Llamamos al controlador para autenticar al usuario
+        ResponseEntity<Result<ResultLogInDTO>> response = loginController.login(logInDTO);
+
+        // Assert: Verificamos que la autenticación fue exitosa
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(resultLogInDTO, response.getBody().getData());
+
+        // Verificamos que el AuthService fue llamado correctamente
+        verify(authService, times(1)).authenticate(logInDTO);
+    }
+
+    // Caso de prueba: Inicio de Sesión - Usuario no existente
+    @Test
+    void testLoginWithNonExistentEmail() {
+        // Arrange: Datos de entrada
+        String email = "nonexistent@example.com";
+        String password = "SomePassword123";
+        LogInDTO logInDTO = new LogInDTO(email, password);
+
+        // Simulamos que el AuthService devuelve null cuando el usuario no existe
+        when(authService.authenticate(logInDTO)).thenReturn(null);
+
+        // Act: Llamamos al controlador para autenticar al usuario
+        ResponseEntity<Result<ResultLogInDTO>> response = loginController.login(logInDTO);
+
+        // Assert: Verificamos que el resultado es UNAUTHORIZED
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isFailure());
+        assertEquals("Usuario o contraseña incorrectos", response.getBody().getMessage());
+
         // Verificamos que el AuthService fue llamado correctamente
         verify(authService, times(1)).authenticate(logInDTO);
     }
