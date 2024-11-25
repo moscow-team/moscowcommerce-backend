@@ -1,82 +1,86 @@
 package com.example.moscowcommerce_backend;
 
+import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
 import com.example.moscowcommerce_backend.Product.Application.DeleteProductService;
-import com.example.moscowcommerce_backend.Product.Infrastructure.Controllers.ProductController;
-import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.ResultProductDTO;
+import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
+import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductAlreadyArchived;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
-import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class DeleteProductTest {
 
     @Mock
-    private DeleteProductService deleteProductService;
+    private IProductRepository repository;
 
     @InjectMocks
-    private ProductController productController;
+    private DeleteProductService deleteProductService;
 
     @BeforeEach
     void setUp() {
-        // Setup inicial
+        // Configuración adicional si es necesaria
     }
 
     // Caso de prueba: Eliminar un producto ya archivado
     @Test
     void testDeleteArchivedProduct() {
-        // Arrange: Configurar los datos de entrada y comportamiento simulado
         Integer productId = 1;
-        
-        // Simulamos que el producto ya está archivado
-        when(deleteProductService.execute(productId)).thenThrow(new RuntimeException("Producto ya archivado"));
+        ProductEntity archivedProduct = new ProductEntity();
+        archivedProduct.setId(productId);
+        archivedProduct.setArchivedDate(LocalDate.now()); // Producto ya archivado
+        archivedProduct.setName("Producto archivado");
+        archivedProduct.setDescription("Descripción del producto archivado");
+        archivedProduct.setPrice(100.0);
+        archivedProduct.setStock(10);
+        archivedProduct.setCategory(new CategoryEntity());
+        archivedProduct.setPhotos(null);
 
-        // Act: Llamamos al método deleteProduct del controlador
-        ResponseEntity<Result<ResultProductDTO>> response = productController.deleteProduct(productId);
+        // Simulamos que el repositorio encuentra un producto ya archivado
+        when(repository.findById(productId)).thenReturn(Optional.of(archivedProduct));
 
-        // Assert: Verificamos el resultado
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().isFailure());
-        assertEquals("Producto ya archivado", response.getBody().getMessage());
+        // Ejecutamos y verificamos que lanza la excepción
+        ProductAlreadyArchived exception = assertThrows(ProductAlreadyArchived.class,
+                () -> deleteProductService.execute(productId));
 
-        // Verificamos que el servicio fue llamado una vez
-        verify(deleteProductService, times(1)).execute(productId);
+        assertEquals("El producto ya está archivado.", exception.getMessage());
+
+        // Verificamos que nunca se llama a save
+        verify(repository, never()).save(any(ProductEntity.class));
     }
 
     // Caso de prueba: Eliminar un producto activo
     @Test
     void testDeleteActiveProduct() {
-        // Arrange: Configurar los datos de entrada y comportamiento simulado
-        Integer productId = 2;
-        ProductEntity activeProduct = new ProductEntity(); // Configurar las propiedades necesarias para el test
-        LocalDate timeNow = LocalDate.now();
-        activeProduct.setArchivedDate(timeNow);
+        Integer productId = 1;
+        ProductEntity activeProduct = new ProductEntity();
+        activeProduct.setId(productId);
+        activeProduct.setArchivedDate(null); // Producto activo
 
-        // Simulamos que el producto es eliminado correctamente
-        when(deleteProductService.execute(productId)).thenReturn(activeProduct);
+        // Configuramos el comportamiento del repositorio
+        when(repository.findById(productId)).thenReturn(Optional.of(activeProduct));
+        when(repository.save(any(ProductEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act: Llamamos al método deleteProduct del controlador
-        ResponseEntity<Result<ResultProductDTO>> response = productController.deleteProduct(productId);
+        // Ejecutamos el servicio
+        ProductEntity archivedProduct = deleteProductService.execute(productId);
 
-        // Assert: Verificamos el resultado
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().isSuccess());
-        assertEquals("Producto eliminado con exito.", response.getBody().getMessage());
+        // Verificamos que el producto ha sido archivado correctamente
+        assertEquals(activeProduct.getId(), archivedProduct.getId());
+        assertNotNull(archivedProduct.getArchivedDate());
+        assertEquals(LocalDate.now(), archivedProduct.getArchivedDate());
 
-        // Verificamos que el servicio fue llamado una vez
-        verify(deleteProductService, times(1)).execute(productId);
+        // Verificamos que el método save fue llamado una vez
+        verify(repository, times(1)).save(any(ProductEntity.class));
     }
 }

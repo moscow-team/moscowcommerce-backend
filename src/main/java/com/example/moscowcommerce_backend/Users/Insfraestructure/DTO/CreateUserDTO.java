@@ -12,6 +12,8 @@ public class CreateUserDTO {
 
     @NotBlank(message = "El nombre completo es requerido")
     @Size(max = 50, message = "El nombre completo debe tener entre 1 y 50 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", 
+         message = "El nombre completo solo puede contener letras y espacios")
     private String fullName;
 
     @NotBlank(message = "El email es requerido")
