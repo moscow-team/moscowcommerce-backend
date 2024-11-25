@@ -42,7 +42,7 @@ public class CreateUserDTOTest {
     void testInvalidFullName() {
         // Nombre completo inválido
         CreateUserDTO dto = new CreateUserDTO(
-                "",
+                null,
                 "juan.perez@example.com",
                 "Password1",
                 "CUSTOMER"
@@ -92,14 +92,14 @@ public class CreateUserDTOTest {
         CreateUserDTO dto = new CreateUserDTO(
                 "Juan Pérez",
                 "juan.perez@example.com",
-                "1234567", // No cumple con el tamaño ni el patrón
+                "123456789", // No cumple con el tamaño ni el patrón
                 "CUSTOMER"
         );
 
         Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
 
         assertFalse(violations.isEmpty(), "Debería haber violaciones para una contraseña inválida");
-        assertEquals("La contraseña debe tener entre 8 y 50 caracteres", violations.iterator().next().getMessage());
+        assertEquals("La contraseña debe tener al menos una letra mayúscula, una letra minúscula y un número", violations.iterator().next().getMessage());
     }
 
         @Test

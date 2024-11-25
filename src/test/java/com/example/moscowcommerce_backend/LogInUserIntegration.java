@@ -43,7 +43,6 @@ public class LogInUserIntegration {
 
     @BeforeEach
     void cleanUp() {
-        ;
     }
 
     private static final String VALID_EMAIL = "user@example.com";
@@ -58,6 +57,7 @@ public class LogInUserIntegration {
         user.setPassword(VALID_PASSWORD);
         user.setFullName(VALID_FULLNAME);
         user.setRole(ROLE_ADMIN);
+        user.setArchivedDate(null);
         userRepository.save(user);
     }
 
@@ -65,7 +65,7 @@ public class LogInUserIntegration {
     void testLogInUserCorrectly() throws Exception {
         this.setUp();
         LogInDTO logInDTO = new LogInDTO(VALID_EMAIL, VALID_PASSWORD);
-        mockMvc.perform(post("/auth/login/")
+        mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(logInDTO)))
                 .andExpect(status().isOk());
