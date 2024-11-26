@@ -4,6 +4,7 @@ import com.example.moscowcommerce_backend.Category.Domain.Category;
 import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.CreateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.UpdateCategoryDTO;
+import com.example.moscowcommerce_backend.config.TestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = MoscowcommerceBackendApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Import(TestConfig.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
 public class CategoryControllerIntegrationTest {
@@ -40,7 +43,7 @@ public class CategoryControllerIntegrationTest {
 
     private static final String MATERA_NAME = "Matera";
     private static final String MATERA_DESCRPTION = "Materas de cuero";
-
+    private Integer createdCategoryId;
 
     @BeforeEach
     void setup() {
@@ -50,7 +53,12 @@ public class CategoryControllerIntegrationTest {
         matera.setCreationDate(LocalDate.now());
 
         // Guardar la categoría en la base de datos
-        categoryRepository.save(matera);
+        Category savedCategory = categoryRepository.save(matera);
+
+        createdCategoryId = savedCategory.getId();
+        // imprimir el id de la categoría creada
+        System.out.println("Categoría creada con ID: " + createdCategoryId);
+
     }
 
     // 1. Test para crear una categoría
@@ -110,8 +118,7 @@ public class CategoryControllerIntegrationTest {
     // 3. Test para eliminar una categoría
     @Test
     void deleteCategorySuccessfully() throws Exception {
-        // Suponiendo que existe una categoría con ID 1 en la base de datos.
-        mockMvc.perform(delete("/category/1")
+        mockMvc.perform(delete("/category/"+createdCategoryId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -130,8 +137,12 @@ public class CategoryControllerIntegrationTest {
     // 4. Test para desarchivar una categoría
     @Test
     void unarchivedCategorySuccessfully() throws Exception {
-        // Suponiendo que existe una categoría archivada con ID 2.
-        mockMvc.perform(patch("/category/2")
+        // Eliminar la categoria con el id createdCategoryId
+        mockMvc.perform(delete("/category/"+createdCategoryId)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // Desarchivar la categoría eliminada
+        mockMvc.perform(patch("/category/"+createdCategoryId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
