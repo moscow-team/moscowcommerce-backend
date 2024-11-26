@@ -72,11 +72,11 @@ public class ProductMapper {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
-            CategoryEntity categoryEntity = categoryOptional.get();
+            CategoryEntity categoryEntity = CategoryMapper.toEntity(categoryOptional.get());
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity); 
         }
         
@@ -162,21 +162,75 @@ public class ProductMapper {
         );
     }
 
+    public static ResultProductDTO toResultFromDomain(Product productDomain) {
+        if (productDomain == null) {
+            return null;
+        }
+
+        String price = String.valueOf(productDomain.getPrice());
+        String stock = String.valueOf(productDomain.getStock());
+
+        // Obtener el objeto Category
+        Category category = productDomain.getCategory();
+
+        List<String> photoUrls = productDomain.getPhotos().stream()
+                .map(ProductPhoto::getUrlPhoto)
+                .collect(Collectors.toList());
+
+        String archivedDate = productDomain.getArchivedDate() != null ? productDomain.getArchivedDate().toString() : "";
+
+        // Determinar si el producto está archivado
+        boolean archived = productDomain.getArchivedDate() != null;
+
+        return ResultProductDTO.create(
+            productDomain.getId(),
+            productDomain.getName(),
+            productDomain.getDescription(),
+            price,
+            stock,
+            category,
+            photoUrls,
+            archived,
+            archivedDate
+        );
+    }
+
+
     public static Product toDomainFromUpdateDTO(UpdateProductDTO productDTO, Integer id, ICategoryRepository categoryRepository) {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
-            CategoryEntity categoryEntity = categoryOptional.get();
+
+            CategoryEntity categoryEntity = CategoryMapper.toEntity(categoryOptional.get());
             categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity);
         }
 
-        List<ProductPhoto> photos = productDTO.getUrlPhotos().stream()
-                .map(url -> new ProductPhoto(url))
-                .collect(Collectors.toList());
+        List<ProductPhoto> photos = new ArrayList<>();
+
+        // Agregar fotos existentes
+        if (productDTO.getExistingPhotos() != null) {
+            photos.addAll(productDTO.getExistingPhotos().stream()
+                    .map(url -> new ProductPhoto(url))
+                    .collect(Collectors.toList()));
+        }
+
+        // Agregar nuevas fotos
+        if (productDTO.getUrlPhotos() != null) {
+            photos.addAll(productDTO.getUrlPhotos().stream()
+                    .map(url -> new ProductPhoto(url))
+                    .collect(Collectors.toList()));
+        }
+
+        // Agregar fotos a eliminar
+        if (productDTO.getPhotosToDelete() != null) {
+            for (String photoUrl : productDTO.getPhotosToDelete()) {
+                photos.removeIf(photo -> photo.getUrlPhoto().equals(photoUrl));
+            }
+        }
 
         return new Product(
             id,

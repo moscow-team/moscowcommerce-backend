@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.example.moscowcommerce_backend.Shared.Application.StorageImage;
+import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Criteria;
+import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Filter;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,8 @@ import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.UpdateProdu
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
 import com.example.moscowcommerce_backend.Shared.Infrastructure.Result;
+import com.example.moscowcommerce_backend.Shared.Infrastructure.Utils;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/products")
@@ -39,8 +44,7 @@ public class ProductController {
             UpdateProductService updateProductService,
             ICategoryRepository categoryRepository,
             DeleteProductService deleteProductService,
-            UnarchivedProduct unarchivedProduct, StorageImage storageImage
-    ) {
+            UnarchivedProduct unarchivedProduct, StorageImage storageImage) {
         this.createProductService = createProductService;
         this.listProductService = listProductService;
         this.updateProductService = updateProductService;
@@ -51,10 +55,10 @@ public class ProductController {
     }
 
     // Endpoint para crear un producto
-    @PostMapping(value="", consumes="multipart/form-data")
+    @PostMapping(value = "", consumes = "multipart/form-data")
     public ResponseEntity<Result<ResultProductDTO>> createProduct(@ModelAttribute CreateProductDTO product) {
         try {
-            if(product.getPhotos() == null || product.getPhotos().isEmpty()) {
+            if (product.getPhotos() == null || product.getPhotos().isEmpty()) {
                 product.setUrlPhotos(Collections.emptyList());
             } else {
                 var storageResult = storageImage.HandleImage(product.getPhotos());
@@ -74,7 +78,8 @@ public class ProductController {
     public ResponseEntity<Result<List<ResultProductDTO>>> listProduct() {
         try {
             List<ProductEntity> products = this.listProductService.findAll();
-            List<ResultProductDTO> productsDTO = products.stream().map(product -> ProductMapper.toResultFromEntity(product)).toList();
+            List<ResultProductDTO> productsDTO = products.stream()
+                    .map(product -> ProductMapper.toResultFromEntity(product)).toList();
             return new ResponseEntity<>(Result.success(productsDTO, "Productos obtenidos con exito."), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,20 +108,38 @@ public class ProductController {
         }
     }
 
-    @PutMapping(value="/{id}", consumes="multipart/form-data")
-    public ResponseEntity<Result<ResultProductDTO>> updateProduct(@ModelAttribute UpdateProductDTO product, @PathVariable Integer id) {
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<Result<ResultProductDTO>> updateProduct(@ModelAttribute UpdateProductDTO product,
+            @PathVariable Integer id) {
         try {
-            if(product.getPhotos() == null || product.getPhotos().isEmpty()) {
+            if (product.getPhotos() == null || product.getPhotos().isEmpty()) {
                 product.setUrlPhotos(Collections.emptyList());
             } else {
                 var storageResult = storageImage.HandleImage(product.getPhotos());
                 product.setUrlPhotos(storageResult);
             }
-            product.setPhotos(null);
             Product productToUpdate = ProductMapper.toDomainFromUpdateDTO(product, id, categoryRepository);
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productUpdated);
             return new ResponseEntity<>(Result.success(productDTO, "Producto actualizado con exito."), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Get By Criteria
+    @GetMapping("/filters")
+    public ResponseEntity<Result<List<ResultProductDTO>>> getProductsByFilters(@RequestParam Map<String, String> params) {
+        try {
+            List<Filter> filters = Utils.getFiltersFromParams(params);
+            Criteria criteria = Criteria.create(filters);
+
+            List<Product> products = this.listProductService.findByCriteria(criteria);
+
+            List<ResultProductDTO> productsDTO = products.stream()
+                    .map(product -> ProductMapper.toResultFromDomain(product)).toList();
+
+            return new ResponseEntity<>(Result.success(productsDTO, "Productos obtenidos con exito."), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

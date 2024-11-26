@@ -14,6 +14,8 @@ public class UpdateProductDTO {
     private double price;
     private int stock;
     public String categoryId;
-    public List<String> urlPhotos = new ArrayList<>();
+    public List<String> urlPhotos = new ArrayList<>(); // Lista para fotos nuevas
     public List<MultipartFile> photos;
+    public List<String> existingPhotos = new ArrayList<>(); // Lista para fotos existentes
+    public List<String> photosToDelete = new ArrayList<>(); // Lista para fotos a eliminar
 }
