@@ -14,22 +14,24 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.moscowcommerce_backend.Auth.Infrastructure.DTO.LogInDTO;
 import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
 import com.example.moscowcommerce_backend.Users.Domain.User;
-import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.UserEntity;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Entities.Enums.Role;
-import com.example.moscowcommerce_backend.Users.Insfraestructure.Ports.IUserRepositoryJPA;
 import com.example.moscowcommerce_backend.config.TestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.transaction.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@SpringBootTest(classes = MoscowcommerceBackendApplicationTests.class)
+@SpringBootTest(classes = MoscowcommerceBackendApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestConfig.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Transactional
 public class LogInUserIntegration {
 
     @Autowired
@@ -54,7 +56,7 @@ public class LogInUserIntegration {
     private void setUp() {
         User user = new User();
         user.setEmail(VALID_EMAIL);
-        user.setPassword(VALID_PASSWORD);
+        user.setPassword(new BCryptPasswordEncoder().encode(VALID_PASSWORD));
         user.setFullName(VALID_FULLNAME);
         user.setRole(ROLE_ADMIN);
         user.setArchivedDate(null);

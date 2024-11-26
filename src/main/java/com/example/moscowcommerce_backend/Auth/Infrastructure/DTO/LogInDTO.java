@@ -16,6 +16,9 @@ public class LogInDTO {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     public String password;
 
+    public LogInDTO() {
+    }
+
     public LogInDTO(String email, String password) {
         this.email = email;
         this.password = password;
