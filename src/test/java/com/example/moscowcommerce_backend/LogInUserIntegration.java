@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest(classes = MoscowcommerceBackendApplication.class)
 @AutoConfigureMockMvc
@@ -42,6 +43,9 @@ public class LogInUserIntegration {
 
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void cleanUp() {
@@ -56,7 +60,8 @@ public class LogInUserIntegration {
     private void setUp() {
         User user = new User();
         user.setEmail(VALID_EMAIL);
-        user.setPassword(new BCryptPasswordEncoder().encode(VALID_PASSWORD));
+        String password = this.passwordEncoder.encode(VALID_PASSWORD);
+        user.setPassword(password);
         user.setFullName(VALID_FULLNAME);
         user.setRole(ROLE_ADMIN);
         user.setArchivedDate(null);
