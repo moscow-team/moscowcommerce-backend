@@ -1,15 +1,19 @@
 package com.example.moscowcommerce_backend.Order.Infrastructure.Controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.moscowcommerce_backend.Order.Core.Application.CreateOrderUseCase;
+import com.example.moscowcommerce_backend.Order.Core.Application.ListOrdersUseCase;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Order;
 import com.example.moscowcommerce_backend.Order.Infrastructure.DTOs.CreateOrderDTO;
 import com.example.moscowcommerce_backend.Order.Infrastructure.DTOs.ResultOrderDTO;
@@ -22,10 +26,12 @@ import jakarta.validation.Valid;
 @RequestMapping("/order")
 public class OrderController {
     private final CreateOrderUseCase createOrderUseCase;
+    private final ListOrdersUseCase listOrdersUseCase;
 
     @Autowired
-    public OrderController(CreateOrderUseCase createOrderUseCase) {
+    public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase) {
         this.createOrderUseCase = createOrderUseCase;
+        this.listOrdersUseCase = listOrdersUseCase;
     }
 
     @PostMapping
@@ -34,6 +40,16 @@ public class OrderController {
             String userEmail = getAuthenticatedUserEmail();
             Order orderSaved = this.createOrderUseCase.create(order, userEmail);
             return ResponseEntity.ok(Result.success(OrderMapper.mapToResult(orderSaved), "Orden creada con éxito"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Result.failure(e.getMessage()));
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<Result<List<ResultOrderDTO>>> listOrders() {
+        try {
+            List<Order> orders = this.listOrdersUseCase.listOrders();
+            return ResponseEntity.ok(Result.success(orders.stream().map(OrderMapper::mapToResult).toList(), "Lista de órdenes"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Result.failure(e.getMessage()));
         }
