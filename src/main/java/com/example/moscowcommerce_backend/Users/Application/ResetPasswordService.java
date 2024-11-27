@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IResetPassword;
 import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
 import com.example.moscowcommerce_backend.Users.Domain.User;
-import com.example.moscowcommerce_backend.Users.Domain.Exceptions.PasswordDoesNotMatchException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
