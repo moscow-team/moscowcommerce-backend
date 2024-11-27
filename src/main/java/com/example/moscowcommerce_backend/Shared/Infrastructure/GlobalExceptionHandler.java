@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(Result.failure("Surguió un error con los datos proporcionados", errors), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(Result.failure("Surgió un error con los datos proporcionados", errors), HttpStatus.BAD_REQUEST);
     }
 
     // Manejo de excepciones de autorización no válida
