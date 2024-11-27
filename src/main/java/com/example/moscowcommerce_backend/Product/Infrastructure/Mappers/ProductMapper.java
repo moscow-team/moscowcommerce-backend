@@ -105,7 +105,7 @@ public class ProductMapper {
 
         Category category = CategoryMapper.toDomainFromEntity(productEntity.getCategory());
         List<ProductPhoto> photos = productEntity.getPhotos().stream()
-                .map(photo -> new ProductPhoto(photo.getUrl()))
+                .map(photo -> new ProductPhoto(photo.getId(), photo.getUrl()))
                 .collect(Collectors.toList());
 
         if (productEntity.getArchivedDate() != null) {
