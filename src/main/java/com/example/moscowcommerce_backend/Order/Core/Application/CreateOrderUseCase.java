@@ -7,12 +7,14 @@ import com.example.moscowcommerce_backend.Order.Core.Application.Ports.ICreateOr
 import com.example.moscowcommerce_backend.Order.Core.Domain.Order;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Payment;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Shipment;
+import com.example.moscowcommerce_backend.Order.Core.Domain.Exceptions.InsufficientStockExeption;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Ports.IOrderRepository;
 import com.example.moscowcommerce_backend.Order.Infrastructure.DTOs.CreateOrderDTO;
 import com.example.moscowcommerce_backend.Order.Infrastructure.DTOs.ProductOrderDTO;
 import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
 import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductNotFoundException;
+import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
 import com.example.moscowcommerce_backend.Shared.Domain.PriceValueObject;
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IListUserService;
@@ -49,20 +51,40 @@ public final class CreateOrderUseCase implements ICreateOrderUseCase {
 
         Order newOrder = new Order(user, products, payment, shipment);
 
-        return orderRepository.save(newOrder);
+        return saveOrderAndUpdateProducts(newOrder, products);
     }
 
     private List<Product> validateAndRetrieveProducts(List<ProductOrderDTO> productOrders) {
         return productOrders.stream()
-                .map(this::findProductById)
+                .map(this::validateAndReduceStock)
                 .collect(Collectors.toList());
     }
 
-    private Product findProductById(ProductOrderDTO productOrder) {
-        return productRepository.findById(productOrder.getProductId())
+    private Order saveOrderAndUpdateProducts(Order order, List<Product> products) {
+        List<ProductEntity> productEntities = products.stream()
+                .map(ProductMapper::toEntity)
+                .collect(Collectors.toList());
+
+        productEntities.forEach(productRepository::save);
+
+        return orderRepository.save(order);
+    }
+
+    private Product validateAndReduceStock(ProductOrderDTO productOrder) {
+        Product product = productRepository.findById(productOrder.getProductId())
                 .map(ProductMapper::toDomainFromEntity)
                 .orElseThrow(() -> new ProductNotFoundException(
                         "El producto con id " + productOrder.getProductId() + " no existe"));
+
+        if (product.getStock() < productOrder.getQuantity()) {
+            throw new InsufficientStockExeption(
+                    "El producto con id " + product.getId() + " no tiene suficiente stock. Stock disponible: "
+                            + product.getStock());
+        }
+
+        product.setStock(product.getStock() - productOrder.getQuantity());
+
+        return product;
     }
 
     private PriceValueObject calculateTotalAmount(CreateOrderDTO order, List<Product> products) {
