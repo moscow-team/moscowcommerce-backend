@@ -94,6 +94,10 @@ public class Order {
         this.archivedTime = LocalDate.now();
     }
 
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
     public Boolean isArchived() {
         return this.archivedTime != null;
     }
