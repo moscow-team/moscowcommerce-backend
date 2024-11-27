@@ -33,11 +33,11 @@ public final class ProductEntity {
     @Column(nullable = false)
     private int stock;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = true)
     private CategoryEntity category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductPhotoEntity> photos = new ArrayList<>();
 
     @Column(nullable = true, columnDefinition = "DATE")

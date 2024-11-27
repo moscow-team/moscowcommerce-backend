@@ -40,6 +40,9 @@ public class ProductMapper {
         productEntity.setPrice(productDomain.getPrice());
         productEntity.setStock(productDomain.getStock());
         productEntity.setCategory(CategoryMapper.toEntity(productDomain.getCategory()));
+        productEntity.setPhotos(productDomain.getPhotos().stream()
+                .map(photo -> toPhotoEntity(photo, productEntity))
+                .collect(Collectors.toList()));
 
         if (productDomain.getArchivedDate() != null) {
             productEntity.setArchivedDate(productDomain.getArchivedDate());
@@ -102,7 +105,7 @@ public class ProductMapper {
 
         Category category = CategoryMapper.toDomainFromEntity(productEntity.getCategory());
         List<ProductPhoto> photos = productEntity.getPhotos().stream()
-                .map(photo -> new ProductPhoto(photo.getUrl()))
+                .map(photo -> new ProductPhoto(photo.getId(), photo.getUrl()))
                 .collect(Collectors.toList());
 
         if (productEntity.getArchivedDate() != null) {
