@@ -19,7 +19,7 @@ public class UserMapper {
             return null;
         }
 
-        return new User(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getPassword(), userEntity.getRole());
+        return new User(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getPassword(), userEntity.getRole(), userEntity.getCreationDate(), userEntity.getModificationDate(), userEntity.getArchivedDate());
     }
 
     public static UserEntity toEntity(User userDomain) {
@@ -33,12 +33,15 @@ public class UserMapper {
         userEntity.setFullName(userDomain.getFullName());
         userEntity.setPassword(userDomain.getPassword());
         userEntity.setRole(userDomain.getRole());
+        userEntity.setCreationDate(userDomain.getCreationDate());
+        userEntity.setModificationDate(userDomain.getModificationDate());
+        userEntity.setArchivedDate(userDomain.getArchivedDate());
 
         return userEntity;
     }
 
     public static ResultUserDTO toResultUserDTO(User user) {
-        return ResultUserDTO.create(user.getId(), user.getEmail(), user.getFullName(), user.getRole());
+        return ResultUserDTO.create(user.getId(), user.getEmail(), user.getFullName(), user.getRole(), user.getCreationDate(), user.getModificationDate(), user.getArchivedDate());
     }
 
     public static ResultUserDTO toResultFromEntity(UserEntity userEntity) {
@@ -46,7 +49,15 @@ public class UserMapper {
             return null;
         }
 
-        return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getRole());
+        return ResultUserDTO.create(userEntity.getId(), userEntity.getEmail(), userEntity.getFullName(), userEntity.getRole(), userEntity.getCreationDate(), userEntity.getModificationDate(), userEntity.getArchivedDate());
+    }
+
+    public static ResultUserDTO toResultFromDomain(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        return ResultUserDTO.create(user.getId(), user.getEmail(), user.getFullName(), user.getRole(), user.getCreationDate(), user.getModificationDate(), user.getArchivedDate());
     }
 
     public static User updateDTOToUserDomain(UpdateUserDTO userDTO) {

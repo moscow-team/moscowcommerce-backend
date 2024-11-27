@@ -1,5 +1,6 @@
 package com.example.moscowcommerce_backend.Users.Insfraestructure.Entities;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +37,26 @@ public final class UserEntity implements UserDetails{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false, columnDefinition = "DATE", updatable = false)
+    private LocalDate creationDate;
+
+    @Column(nullable = true, columnDefinition = "DATE")
+    private LocalDate modificationDate;
+
+    @Column(nullable = true, columnDefinition = "DATE")
+    private LocalDate archivedDate;
+
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = LocalDate.now();
+        this.modificationDate = LocalDate.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.modificationDate = LocalDate.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
