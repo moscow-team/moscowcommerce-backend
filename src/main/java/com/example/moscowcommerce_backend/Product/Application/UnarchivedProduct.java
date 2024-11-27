@@ -24,7 +24,7 @@ public class UnarchivedProduct implements IUnarchivedProductService{
     @Override
     public ProductEntity execute(Integer id) {
         ProductEntity productEntity = repository.findById(id).orElseThrow(
-            () -> new ProductNotFoundException("Product not found")
+            () -> new ProductNotFoundException("Producto no encontrado")
         );
 
         Product product = ProductMapper.toDomainFromEntity(productEntity);

@@ -165,7 +165,7 @@ public class CategoryControllerIntegrationTest {
         updateDTO.setName("Updated Name");
         updateDTO.setDescription("Updated Description");
 
-        mockMvc.perform(put("/category/1")
+        mockMvc.perform(put("/category/"+createdCategoryId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isOk())
