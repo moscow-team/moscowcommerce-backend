@@ -40,6 +40,9 @@ public class ProductMapper {
         productEntity.setPrice(productDomain.getPrice());
         productEntity.setStock(productDomain.getStock());
         productEntity.setCategory(CategoryMapper.toEntity(productDomain.getCategory()));
+        productEntity.setPhotos(productDomain.getPhotos().stream()
+                .map(photo -> toPhotoEntity(photo, productEntity))
+                .collect(Collectors.toList()));
 
         if (productDomain.getArchivedDate() != null) {
             productEntity.setArchivedDate(productDomain.getArchivedDate());
