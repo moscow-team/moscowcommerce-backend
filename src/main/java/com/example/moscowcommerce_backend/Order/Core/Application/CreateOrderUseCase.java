@@ -1,9 +1,9 @@
 package com.example.moscowcommerce_backend.Order.Core.Application;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.moscowcommerce_backend.Order.Core.Application.Ports.ICreateOrderUseCase;
-import com.example.moscowcommerce_backend.Order.Core.Domain.AmountPayment;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Order;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Payment;
 import com.example.moscowcommerce_backend.Order.Core.Domain.Shipment;
@@ -14,6 +14,7 @@ import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
 import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductNotFoundException;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Mappers.ProductMapper;
+import com.example.moscowcommerce_backend.Shared.Domain.PriceValueObject;
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IListUserService;
 import com.example.moscowcommerce_backend.Users.Domain.User;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
+@Service
 public final class CreateOrderUseCase implements ICreateOrderUseCase {
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
@@ -41,7 +43,7 @@ public final class CreateOrderUseCase implements ICreateOrderUseCase {
         List<Product> products = validateAndRetrieveProducts(order.getProducts());
         User user = listUserService.findByEmail(userEmail);
 
-        AmountPayment amountPayment = calculateTotalAmount(order, products);
+        PriceValueObject amountPayment = calculateTotalAmount(order, products);
         Payment payment = new Payment(order.getPayment().getPaymentMethod(), amountPayment);
         Shipment shipment = new Shipment(order.getShipment().getAddress());
 
@@ -63,12 +65,12 @@ public final class CreateOrderUseCase implements ICreateOrderUseCase {
                         "El producto con id " + productOrder.getProductId() + " no existe"));
     }
 
-    private AmountPayment calculateTotalAmount(CreateOrderDTO order, List<Product> products) {
-        AmountPayment total = new AmountPayment(BigDecimal.ZERO);
+    private PriceValueObject calculateTotalAmount(CreateOrderDTO order, List<Product> products) {
+        PriceValueObject total = new PriceValueObject(BigDecimal.ZERO);
         for (Product product : products) {
             Integer quantity = getQuantityProduct(order.getProducts(), product.getId());
             double productPrice = product.getPrice().doubleValue();
-            total = (AmountPayment) total.add(new AmountPayment(BigDecimal.valueOf(productPrice * quantity)));
+            total = total.add(new PriceValueObject(BigDecimal.valueOf(productPrice * quantity)));
         }
         return total;
     }

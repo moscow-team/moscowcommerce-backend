@@ -1,6 +1,8 @@
 package com.example.moscowcommerce_backend.Order.Infrastructure.Adapters;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import com.example.moscowcommerce_backend.Order.Infrastructure.Entities.OrderEnt
 import com.example.moscowcommerce_backend.Order.Infrastructure.Mappers.OrderMapper;
 import com.example.moscowcommerce_backend.Order.Infrastructure.Ports.JpaOrderRepository;
 
+@Repository
 public class JPAOrderRepositoryAdapter implements IOrderRepository {
 
     private final JpaOrderRepository jpaOrderRepository;

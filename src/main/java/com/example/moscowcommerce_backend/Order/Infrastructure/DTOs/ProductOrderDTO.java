@@ -1,13 +1,13 @@
 package com.example.moscowcommerce_backend.Order.Infrastructure.DTOs;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ProductOrderDTO {
-    @NotBlank(message = "El productId es obligatorio")
+    @NotNull(message = "El productId es obligatorio")
     private Integer productId;
 
-    @NotBlank(message = "La cantidad es obligatoria")
+    @NotNull(message = "La cantidad es obligatoria")
     private Integer quantity;
 }

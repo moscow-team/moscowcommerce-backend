@@ -13,7 +13,9 @@ import com.example.moscowcommerce_backend.Order.Infrastructure.Entities.Enums.Pa
 public abstract class PaymentMapper {
     public static PaymentEntity mapToEntity(Payment payment) {
         PaymentEntity paymentEntity = new PaymentEntity();
-        paymentEntity.setId(payment.getId().value());
+        if (payment.getId() != null) {
+            paymentEntity.setId(payment.getId().value());
+        }
         paymentEntity.setAmount(payment.getAmount().doubleValue());
         paymentEntity.setPaymentMethod(payment.getPaymentMethod());
         paymentEntity.setPaymentStatus(payment.getState().getName());

@@ -3,7 +3,6 @@ package com.example.moscowcommerce_backend.Shared.Infrastructure.Entities;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
@@ -14,7 +13,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-@Entity
 public abstract class BaseEntity { 
     @Column(nullable = false, columnDefinition = "DATE", updatable = false)
     private LocalDate creationDate;
