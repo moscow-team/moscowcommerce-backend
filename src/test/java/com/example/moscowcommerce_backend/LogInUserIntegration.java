@@ -42,7 +42,7 @@ public class LogInUserIntegration {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -54,7 +54,6 @@ public class LogInUserIntegration {
     private static final String VALID_PASSWORD = "Password1";
     private static final String VALID_FULLNAME = "Jhon Doe";
     private static final Role ROLE_ADMIN = Role.ADMIN;
-    private static final String INVALID_PASSWORD = "Password2";
 
     private void setUp() {
         User user = new User();

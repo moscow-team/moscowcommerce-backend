@@ -5,14 +5,11 @@ import com.example.moscowcommerce_backend.Category.Domain.ICategoryRepository;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Entities.CategoryEntity;
 import com.example.moscowcommerce_backend.Category.Infrastructure.Mappers.CategoryMapper;
 import com.example.moscowcommerce_backend.Product.Domain.IProductRepository;
-import com.example.moscowcommerce_backend.Product.Domain.Product;
 import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.CreateProductDTO;
 import com.example.moscowcommerce_backend.Product.Infrastructure.DTO.UpdateProductDTO;
 import com.example.moscowcommerce_backend.Product.Infrastructure.Entities.ProductEntity;
 import com.example.moscowcommerce_backend.config.TestConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +43,6 @@ public class ProductControllerIntegrationTest {
 
     @Autowired
     private ICategoryRepository categoryRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private static final String PRODUCT_NAME = "Termo";
     private static final String PRODUCT_DESCRIPTION = "Termo de acero inoxidable";
@@ -92,7 +86,7 @@ public class ProductControllerIntegrationTest {
     @Test
     void getAllProductsSuccessfully() throws Exception {
         mockMvc.perform(get("/products")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
     }
@@ -109,12 +103,11 @@ public class ProductControllerIntegrationTest {
         productDTO.setPhotos(Collections.emptyList()); // Imagen vacía
 
         mockMvc.perform(multipart("/products")
-                        .param("name", productDTO.getName())
-                        .param("description", productDTO.getDescription())
-                        .param("price", String.valueOf(productDTO.getPrice()))
-                        .param("stock", String.valueOf(productDTO.getStock()))
-                        .param("categoryId", productDTO.getCategoryId())
-                )
+                .param("name", productDTO.getName())
+                .param("description", productDTO.getDescription())
+                .param("price", String.valueOf(productDTO.getPrice()))
+                .param("stock", String.valueOf(productDTO.getStock()))
+                .param("categoryId", productDTO.getCategoryId()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.name").value(productDTO.getName()))
@@ -133,14 +126,12 @@ public class ProductControllerIntegrationTest {
         productDTO.setCategoryId(String.valueOf(createdCategoryId));
         productDTO.setPhotos(Collections.emptyList()); // Imagen vacía
 
-
         mockMvc.perform(multipart("/products")
-                        .param("name", productDTO.getName())
-                        .param("description", productDTO.getDescription())
-                        .param("price", String.valueOf(productDTO.getPrice()))
-                        .param("stock", String.valueOf(productDTO.getStock()))
-                        .param("categoryId", productDTO.getCategoryId())
-                )
+                .param("name", productDTO.getName())
+                .param("description", productDTO.getDescription())
+                .param("price", String.valueOf(productDTO.getPrice()))
+                .param("stock", String.valueOf(productDTO.getStock()))
+                .param("categoryId", productDTO.getCategoryId()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -149,7 +140,7 @@ public class ProductControllerIntegrationTest {
     @Test
     void deleteProductSuccessfully() throws Exception {
         mockMvc.perform(delete("/products/" + createdProductId)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Producto eliminado con exito."));
@@ -158,7 +149,7 @@ public class ProductControllerIntegrationTest {
     @Test
     void deleteNonExistentProduct() throws Exception {
         mockMvc.perform(delete("/products/999")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -172,7 +163,7 @@ public class ProductControllerIntegrationTest {
 
         // Desarchivar el producto
         mockMvc.perform(patch("/products/" + createdProductId)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Producto desarchivado con exito."));
@@ -181,7 +172,7 @@ public class ProductControllerIntegrationTest {
     @Test
     void unarchiveNonExistentProduct() throws Exception {
         mockMvc.perform(patch("/products/999")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));
     }
@@ -198,13 +189,13 @@ public class ProductControllerIntegrationTest {
         updateProductDTO.setPhotos(Collections.emptyList()); // Imagen vacía
 
         mockMvc.perform(MockMvcRequestBuilders.put("/products/" + createdProductId) // Usar PUT para la actualización
-                        .param("name", updateProductDTO.getName())
-                        .param("description", updateProductDTO.getDescription())
-                        .param("price", String.valueOf(updateProductDTO.getPrice()))
-                        .param("stock", String.valueOf(updateProductDTO.getStock()))
-                        .param("categoryId", updateProductDTO.getCategoryId())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)  // Definir que el contenido es de tipo multipart
-                )
+                .param("name", updateProductDTO.getName())
+                .param("description", updateProductDTO.getDescription())
+                .param("price", String.valueOf(updateProductDTO.getPrice()))
+                .param("stock", String.valueOf(updateProductDTO.getStock()))
+                .param("categoryId", updateProductDTO.getCategoryId())
+                .contentType(MediaType.MULTIPART_FORM_DATA) // Definir que el contenido es de tipo multipart
+        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.name").value(updateProductDTO.getName()))
@@ -223,16 +214,17 @@ public class ProductControllerIntegrationTest {
         updateProductDTO.setCategoryId(String.valueOf(createdCategoryId));
         updateProductDTO.setPhotos(Collections.emptyList()); // Imagen vacía
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/products/999" ) // Usar PUT para la actualización
-                        .param("name", updateProductDTO.getName())
-                        .param("description", updateProductDTO.getDescription())
-                        .param("price", String.valueOf(updateProductDTO.getPrice()))
-                        .param("stock", String.valueOf(updateProductDTO.getStock()))
-                        .param("categoryId", updateProductDTO.getCategoryId())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)  // Definir que el contenido es de tipo multipart
-                )
+        mockMvc.perform(MockMvcRequestBuilders.put("/products/999") // Usar PUT para la actualización
+                .param("name", updateProductDTO.getName())
+                .param("description", updateProductDTO.getDescription())
+                .param("price", String.valueOf(updateProductDTO.getPrice()))
+                .param("stock", String.valueOf(updateProductDTO.getStock()))
+                .param("categoryId", updateProductDTO.getCategoryId())
+                .contentType(MediaType.MULTIPART_FORM_DATA) // Definir que el contenido es de tipo multipart
+        )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("[Producto: "+ updateProductDTO.getName() + "] El producto no existe"));
+                .andExpect(jsonPath("$.message")
+                        .value("[Producto: " + updateProductDTO.getName() + "] El producto no existe"));
     }
 }
