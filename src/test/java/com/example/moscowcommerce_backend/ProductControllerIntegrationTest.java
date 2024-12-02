@@ -136,7 +136,8 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.success").value(false));
     }
 
-    // 3. Test para eliminar un producto
+    // 03.05 Eliminacion de producto
+
     @Test
     void deleteProductSuccessfully() throws Exception {
         mockMvc.perform(delete("/products/" + createdProductId)
