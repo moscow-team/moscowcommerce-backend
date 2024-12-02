@@ -30,9 +30,6 @@ public class PriceValueObject {
         if (value.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Price cannot be negative.");
         }
-        if (value.scale() > 3) {
-            throw new IllegalArgumentException("Price cannot have more than two decimal places.");
-        }
     }
 
     public BigDecimal getValue() {
