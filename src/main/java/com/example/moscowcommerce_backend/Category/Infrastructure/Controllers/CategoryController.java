@@ -2,6 +2,7 @@ package com.example.moscowcommerce_backend.Category.Infrastructure.Controllers;
 
 import com.example.moscowcommerce_backend.Category.Application.*;
 import com.example.moscowcommerce_backend.Category.Domain.Category;
+import com.example.moscowcommerce_backend.Category.Domain.Exceptions.*;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.CreateCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.ResultCategoryDTO;
 import com.example.moscowcommerce_backend.Category.Infrastructure.DTO.UpdateCategoryDTO;
@@ -14,6 +15,7 @@ import com.example.moscowcommerce_backend.Shared.Infrastructure.Utils;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +45,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Result<ResultCategoryDTO>> createCategory(@RequestBody CreateCategoryDTO category) {
+    public ResponseEntity<Result<ResultCategoryDTO>> createCategory(@Valid @RequestBody CreateCategoryDTO category) {
         try {
             Category categoryToSave = CategoryMapper.toDomainFromDTO(category);
             Category categorySaved = this.createCategoryService.create(categoryToSave);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(categorySaved);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria creada con éxito"), HttpStatus.CREATED);
+        } catch (CategoryAlreadyExist e) { // Capturamos la excepción personalizada
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -71,6 +75,8 @@ public class CategoryController {
             Category category = this.deleteCategoryService.execute(id);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(category);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria eliminada con éxito"), HttpStatus.OK);
+        } catch (CategoryNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -82,6 +88,10 @@ public class CategoryController {
             Category category = this.unarchivedCategory.execute(id);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(category);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria desarchivada con éxito"), HttpStatus.OK);
+        } catch (CategoryNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (CategoryIsNotArchived e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -94,6 +104,8 @@ public class CategoryController {
             Category categoryUpdated = this.updateCategoryService.updateCategory(categoryToUpdate);
             ResultCategoryDTO categoryDTO = CategoryMapper.toResultFromDomain(categoryUpdated);
             return new ResponseEntity<>(Result.success(categoryDTO, "Categoria actualizada con éxito"), HttpStatus.OK);
+        } catch (CategoryNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -103,6 +115,11 @@ public class CategoryController {
     @GetMapping("/filters")
     public ResponseEntity<Result<List<ResultCategoryDTO>>> getByCriteria(@RequestParam Map<String, String> params) {
         try {
+            // Validar los parámetros de entrada
+            if (params.containsKey("invalidParam")) {
+                return new ResponseEntity<>(Result.failure("Invalid parameter: invalidParam"), HttpStatus.BAD_REQUEST);
+            }
+
             List<Filter> filters = Utils.getFiltersFromParams(params);
             Criteria criteria = Criteria.create(filters);
 

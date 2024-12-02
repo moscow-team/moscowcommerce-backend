@@ -3,7 +3,7 @@ package com.example.moscowcommerce_backend.Users.Domain.Exceptions;
 public class UserAlreadyExistsException extends RuntimeException{
     // Constructor sin parámetros
     public UserAlreadyExistsException() {
-        super("User already exists.");
+        super("El usuario ya existe.");
     }
 
     // Constructor con un mensaje personalizado

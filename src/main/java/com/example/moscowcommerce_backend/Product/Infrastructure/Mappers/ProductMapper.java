@@ -1,6 +1,7 @@
 package com.example.moscowcommerce_backend.Product.Infrastructure.Mappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class ProductMapper {
         if (productDomain.getId() != null) {
             productEntity.setId(productDomain.getId());
         }
-        
+
         productEntity.setName(productDomain.getName());
         productEntity.setDescription(productDomain.getDescription());
         productEntity.setPrice(productDomain.getPrice());
@@ -56,14 +57,14 @@ public class ProductMapper {
         if (productEntity.getPhotos() == null) {
             productEntity.setPhotos(new ArrayList<>());
         }
-        
+
         List<ProductPhotoEntity> photoEntities = product.getPhotos().stream()
                 .map(photo -> toPhotoEntity(photo, productEntity))
                 .collect(Collectors.toList());
 
         productEntity.getPhotos().addAll(photoEntities);
     }
-    
+
     public static ProductPhotoEntity toPhotoEntity(ProductPhoto photo, ProductEntity productEntity) {
         ProductPhotoEntity photoEntity = new ProductPhotoEntity();
         photoEntity.setUrl(photo.getUrlPhoto());
@@ -75,27 +76,27 @@ public class ProductMapper {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository
+                    .findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
             CategoryEntity categoryEntity = CategoryMapper.toEntity(categoryOptional.get());
-            categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity); 
+            categoryDomain = CategoryMapper.toDomainFromEntity(categoryEntity);
         }
-        
+
         List<ProductPhoto> photos = productDTO.urlPhotos.stream()
-        .map(url -> new ProductPhoto(url))
-        .collect(Collectors.toList());
+                .map(url -> new ProductPhoto(url))
+                .collect(Collectors.toList());
 
         return new Product(
-            productDTO.name,
-            productDTO.description,
-            categoryDomain,
-            productDTO.price,
-            productDTO.stock,
-            photos
-        );
-        
+                productDTO.name,
+                productDTO.description,
+                categoryDomain,
+                productDTO.price,
+                productDTO.stock,
+                photos);
+
     }
 
     public static Product toDomainFromEntity(ProductEntity productEntity) {
@@ -103,13 +104,17 @@ public class ProductMapper {
             return null;
         }
 
-        Category category = CategoryMapper.toDomainFromEntity(productEntity.getCategory());
-        List<ProductPhoto> photos = productEntity.getPhotos().stream()
-                .map(photo -> new ProductPhoto(photo.getId(), photo.getUrl()))
-                .collect(Collectors.toList());
+        Category category = productEntity.getCategory() != null
+                ? CategoryMapper.toDomainFromEntity(productEntity.getCategory())
+                : null;
 
-        if (productEntity.getArchivedDate() != null) {
-            return new Product(
+        List<ProductPhoto> photos = productEntity.getPhotos() != null
+                ? productEntity.getPhotos().stream()
+                        .map(photo -> new ProductPhoto(photo.getId(), photo.getUrl()))
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        return new Product(
                 productEntity.getId(),
                 productEntity.getName(),
                 productEntity.getDescription(),
@@ -117,19 +122,7 @@ public class ProductMapper {
                 productEntity.getPrice(),
                 productEntity.getStock(),
                 photos,
-                productEntity.getArchivedDate()
-            );
-        }
-
-        return new Product(
-            productEntity.getId(),
-            productEntity.getName(),
-            productEntity.getDescription(),
-            category,
-            productEntity.getPrice(),
-            productEntity.getStock(),
-            photos
-        );
+                productEntity.getArchivedDate());
     }
 
     public static ResultProductDTO toResultFromEntity(ProductEntity productEntity) {
@@ -153,16 +146,15 @@ public class ProductMapper {
         boolean archived = productEntity.getArchivedDate() != null;
 
         return ResultProductDTO.create(
-            productEntity.getId(),
-            productEntity.getName(),
-            productEntity.getDescription(),
-            price,
-            stock,
-            category,
-            photoUrls,
-            archived,
-            archivedDate
-        );
+                productEntity.getId(),
+                productEntity.getName(),
+                productEntity.getDescription(),
+                price,
+                stock,
+                category,
+                photoUrls,
+                archived,
+                archivedDate);
     }
 
     public static ResultProductDTO toResultFromDomain(Product productDomain) {
@@ -186,24 +178,24 @@ public class ProductMapper {
         boolean archived = productDomain.getArchivedDate() != null;
 
         return ResultProductDTO.create(
-            productDomain.getId(),
-            productDomain.getName(),
-            productDomain.getDescription(),
-            price,
-            stock,
-            category,
-            photoUrls,
-            archived,
-            archivedDate
-        );
+                productDomain.getId(),
+                productDomain.getName(),
+                productDomain.getDescription(),
+                price,
+                stock,
+                category,
+                photoUrls,
+                archived,
+                archivedDate);
     }
 
-
-    public static Product toDomainFromUpdateDTO(UpdateProductDTO productDTO, Integer id, ICategoryRepository categoryRepository) {
+    public static Product toDomainFromUpdateDTO(UpdateProductDTO productDTO, Integer id,
+            ICategoryRepository categoryRepository) {
         Category categoryDomain = null;
 
         if (productDTO.getCategoryId() != null) {
-            Optional<Category> categoryOptional = categoryRepository.findById(Integer.valueOf(productDTO.getCategoryId()));
+            Optional<Category> categoryOptional = categoryRepository
+                    .findById(Integer.valueOf(productDTO.getCategoryId()));
             if (categoryOptional.isEmpty()) {
                 throw new CategoryNotFoundException("Category with ID " + productDTO.getCategoryId() + " not found.");
             }
@@ -236,13 +228,12 @@ public class ProductMapper {
         }
 
         return new Product(
-            id,
-            productDTO.getName(),
-            productDTO.getDescription(),
-            categoryDomain, 
-            productDTO.getPrice(),
-            productDTO.getStock(),
-            photos
-        );
+                id,
+                productDTO.getName(),
+                productDTO.getDescription(),
+                categoryDomain,
+                productDTO.getPrice(),
+                productDTO.getStock(),
+                photos);
     }
 }

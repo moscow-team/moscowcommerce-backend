@@ -1,5 +1,6 @@
 package com.example.moscowcommerce_backend.Category.Application;
 
+import com.example.moscowcommerce_backend.Category.Domain.Exceptions.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class DeleteCategoryService implements IDeleteCategoryService {
     
     @Override
     public Category execute(Integer id) {
-        Category category = repository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = repository.findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         if (category.isArchived()) {
             throw new CategoryAlreadyArchived("La categoria ya esta archivada");

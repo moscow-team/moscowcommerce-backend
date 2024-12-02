@@ -3,10 +3,13 @@ package com.example.moscowcommerce_backend.Product.Infrastructure.Controllers;
 import java.util.Collections;
 import java.util.List;
 
+import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductIsNotArchived;
+import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductNotFoundException;
 import com.example.moscowcommerce_backend.Shared.Application.StorageImage;
 import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Criteria;
 import com.example.moscowcommerce_backend.Shared.Domain.Criteria.Filter;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +59,7 @@ public class ProductController {
 
     // Endpoint para crear un producto
     @PostMapping(value = "", consumes = "multipart/form-data")
-    public ResponseEntity<Result<ResultProductDTO>> createProduct(@ModelAttribute CreateProductDTO product) {
+    public ResponseEntity<Result<ResultProductDTO>> createProduct(@Valid @ModelAttribute CreateProductDTO product) {
         try {
             if (product.getPhotos() == null || product.getPhotos().isEmpty()) {
                 product.setUrlPhotos(Collections.emptyList());
@@ -92,6 +95,8 @@ public class ProductController {
             ProductEntity product = this.deleteProductService.execute(id);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(product);
             return new ResponseEntity<>(Result.success(productDTO, "Producto eliminado con exito."), HttpStatus.OK);
+        }  catch (ProductNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -103,7 +108,12 @@ public class ProductController {
             ProductEntity product = this.unarchivedProduct.execute(id);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(product);
             return new ResponseEntity<>(Result.success(productDTO, "Producto desarchivado con exito."), HttpStatus.OK);
-        } catch (Exception e) {
+        }  catch (ProductNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ProductIsNotArchived e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -122,6 +132,8 @@ public class ProductController {
             ProductEntity productUpdated = this.updateProductService.updateProduct(productToUpdate);
             ResultProductDTO productDTO = ProductMapper.toResultFromEntity(productUpdated);
             return new ResponseEntity<>(Result.success(productDTO, "Producto actualizado con exito."), HttpStatus.OK);
+        }  catch (ProductNotFoundException e) {
+            return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(Result.failure(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

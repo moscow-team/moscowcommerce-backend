@@ -1,5 +1,6 @@
 package com.example.moscowcommerce_backend.Product.Application;
 
+import com.example.moscowcommerce_backend.Product.Domain.Exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class DeleteProductService implements IDeleteProductService {
     
     @Override
     public ProductEntity execute(Integer id) {
-        ProductEntity productEntity = repository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        ProductEntity productEntity = repository.findById(id).orElseThrow(() -> new ProductNotFoundException("Producto no encontrado"));
 
         Product product = ProductMapper.toDomainFromEntity(productEntity);
 

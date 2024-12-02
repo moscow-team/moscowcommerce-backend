@@ -8,12 +8,19 @@ import lombok.Data;
 
 @Data
 public class LogInDTO {
-
     @NotBlank(message = "El correo electrónico es obligatorio")
     @Email(message = "El correo electrónico debe tener un formato válido")
-    private String email;
+    public String email;
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    private String password;
+    public String password;
+
+    public LogInDTO() {
+    }
+
+    public LogInDTO(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

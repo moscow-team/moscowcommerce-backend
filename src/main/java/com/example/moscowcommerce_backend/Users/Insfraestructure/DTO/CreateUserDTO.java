@@ -11,11 +11,13 @@ import lombok.Data;
 public class CreateUserDTO {
 
     @NotBlank(message = "El nombre completo es requerido")
-    @Size(min = 1, max = 50, message = "El nombre completo debe tener entre 1 y 50 caracteres")
+    @Size(max = 50, message = "El nombre completo debe tener entre 1 y 50 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$", 
+         message = "El nombre completo solo puede contener letras y espacios")
     private String fullName;
 
     @NotBlank(message = "El email es requerido")
-    @Size(min = 1, max = 50, message = "El email debe tener entre 1 y 50 caracteres")
+    @Size(max = 50, message = "El email debe tener entre 1 y 50 caracteres")
     @Email(message = "El email no es válido")
     private String email;
 
@@ -34,4 +36,6 @@ public class CreateUserDTO {
         this.password = password;
         this.role= role;
     }
+
+    public  CreateUserDTO(){}
 }
