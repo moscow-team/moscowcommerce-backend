@@ -138,30 +138,14 @@ public class UserControllerIntegrationTest {
     void resetPasswordSuccessfully() throws Exception {
         ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
         resetPasswordDTO.setEmail("test@example.com");
-        resetPasswordDTO.setOld_password("Password123");
-        resetPasswordDTO.setNew_password("newPassword456");
 
         mockMvc.perform(post("/users/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(resetPasswordDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Contraseña modificada con éxito"));
-    }
-
-    @Test
-    void resetPasswordWithInvalidOldPassword() throws Exception {
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
-        resetPasswordDTO.setEmail("test@example.com");
-        resetPasswordDTO.setOld_password("wrongPassword231");
-        resetPasswordDTO.setNew_password("newPassword456");
-
-        mockMvc.perform(post("/users/password")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(resetPasswordDTO)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("La contraseña " + resetPasswordDTO.getOld_password() + " no coincide con la del usuario"));
+                .andExpect(jsonPath("$.message").value("Contraseña modificada con éxito"))
+                .andExpect(jsonPath("$.data.email").value(resetPasswordDTO.getEmail()));
     }
 
     // 5. Test para eliminar un usuario
