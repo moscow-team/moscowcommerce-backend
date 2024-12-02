@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.moscowcommerce_backend.Users.Application.Interfaces.IResetPassword;
 import com.example.moscowcommerce_backend.Users.Domain.IUserRepository;
 import com.example.moscowcommerce_backend.Users.Domain.User;
-import com.example.moscowcommerce_backend.Users.Domain.Exceptions.PasswordDoesNotMatchException;
 import com.example.moscowcommerce_backend.Users.Domain.Exceptions.UserNotFoundException;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswordDTO;
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
@@ -28,18 +27,12 @@ public class ResetPasswordService implements IResetPassword {
 
     public ResultUserDTO resetPassword(ResetPasswordDTO resetPasswordDTO) {
         String email = resetPasswordDTO.getEmail();
-        String oldPassword = resetPasswordDTO.getOld_password();
-        String newPassword = resetPasswordDTO.getNew_password();
 
         Optional<User> userExists = this.userRepository.findByEmail(email);
 
         User userEntity = userExists.orElseThrow(() -> new UserNotFoundException(email));
 
-        if (!passwordEncoder.matches(oldPassword, userEntity.getPassword())) {
-            throw new PasswordDoesNotMatchException(oldPassword);
-        }
-
-        userEntity.setPassword(this.passwordEncoder.encode(newPassword));
+        userEntity.setPassword(this.passwordEncoder.encode("AaBbCc123"));
 
         User userSaved = this.userRepository.save(userEntity);
 
