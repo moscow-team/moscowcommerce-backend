@@ -23,6 +23,9 @@ public class CreateUserDTOTest {
         validator = factory.getValidator();
     }
 
+    // 02.01 Registro de cliente nombre valido
+    // 02.02 Registro de cliente email valido
+    // 02.04 Registro de cliente rol valida
     @Test
     void testValidCreateUserDTO() {
         // DTO válido
@@ -38,6 +41,7 @@ public class CreateUserDTOTest {
         assertTrue(violations.isEmpty(), "No debería haber violaciones para un DTO válido");
     }
 
+    // 01.01 Longitud de full name
     @Test
     void testInvalidFullName() {
         // Nombre completo inválido
@@ -52,6 +56,22 @@ public class CreateUserDTOTest {
 
         assertFalse(violations.isEmpty(), "Debería haber violaciones para un nombre completo vacío");
         assertEquals("El nombre completo es requerido", violations.iterator().next().getMessage());
+    }
+
+    // 01.01 Longitud de full name
+    @Test
+    void testMaxLengthFullName() {
+        CreateUserDTO dto = new CreateUserDTO(
+                "Juan Sebastián Ramírez González de la Torre López Extra Largo",
+                "juan.perez@example.com",
+                "Password1",
+                "CUSTOMER"
+        );
+
+        Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty(), "Debería haber violaciones para un nombre completo vacío");
+        assertEquals("El nombre completo debe tener entre 1 y 50 caracteres", violations.iterator().next().getMessage());
     }
 
     @Test
@@ -102,7 +122,8 @@ public class CreateUserDTOTest {
         assertEquals("La contraseña debe tener al menos una letra mayúscula, una letra minúscula y un número", violations.iterator().next().getMessage());
     }
 
-        @Test
+    // 05.01 Prueba de vulnerabilidad de inyección SQL
+    @Test
     void testInvalidFullName_SQLInjection() {
         // Nombre completo con inyección SQL
         CreateUserDTO dto = new CreateUserDTO(

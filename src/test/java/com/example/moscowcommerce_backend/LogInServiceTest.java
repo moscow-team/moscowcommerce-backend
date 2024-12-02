@@ -31,6 +31,7 @@ public class LogInServiceTest {
     @InjectMocks
     private AuthService authService;
 
+    // 02.03 Inicio de sesión con email válido y contraseña válida
     @Test
     void testInvalidPassword() {
         User user = getUser();
