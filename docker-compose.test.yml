@@ -1,0 +1,32 @@
+services:
+  db_test:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: moscow-testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"  # Puerto diferente para evitar conflictos si hay otra DB en 5432
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+
+  test:
+    image: maven:3.9.4-eclipse-temurin-21
+    depends_on:
+      - db_test
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: mvn test
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db_test:5432/moscow-testdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_PROFILES_ACTIVE: test
+      SECURITY_JWT_SECRET_KEY: 131ae5c75439028c8c5d716c65a6b345f0c60291f344641b06591b0fa143d1fb
+      SECURITY_JWT_EXPIRATION_TIME: 3600000
+      IMGUR_CLIENT_ID: 833612cc84cfd2f
+
+volumes:
+  db_test_data:
