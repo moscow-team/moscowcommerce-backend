@@ -16,6 +16,7 @@ services:
       - db_test
     volumes:
       - .:/app
+      - maven_cache:/root/.m2   # Caché persistente de Maven
     working_dir: /app
     command: mvn test
     environment:
@@ -30,3 +31,4 @@ services:
 
 volumes:
   db_test_data:
+  maven_cache:
