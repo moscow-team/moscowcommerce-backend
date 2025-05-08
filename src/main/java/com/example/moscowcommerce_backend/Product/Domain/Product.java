@@ -1,7 +1,9 @@
 package com.example.moscowcommerce_backend.Product.Domain;
 
 import com.example.moscowcommerce_backend.Category.Domain.Category;
+import com.example.moscowcommerce_backend.Shared.Domain.PriceValueObject;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ public class Product {
     private String name;
     private String description;
     private Category category;
-    private Double price;
+    private PriceValueObject price;
     private Integer stock;
     private List<ProductPhoto> urlPhotos = new ArrayList<>();
     private LocalDate archivedDate;
@@ -21,7 +23,7 @@ public class Product {
         name = null;
         description = null;
         category = null;
-        price = 0.0;
+        price = new PriceValueObject(BigDecimal.ZERO);
         stock = 0;
         urlPhotos = new ArrayList<>();
         this.archivedDate = null;
@@ -31,14 +33,14 @@ public class Product {
         this.name = name;
         this.description = description;
         this.stock = stock;
-        this.price = price;
+        this.price = new PriceValueObject(BigDecimal.valueOf(price));
     }
 
     public Product(String name, String description, Category category, Double price, Integer stock, List<ProductPhoto> urlPhotos) {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.price = price;
+        this.price = new PriceValueObject(BigDecimal.valueOf(price));
         this.stock = stock;
         this.urlPhotos = urlPhotos;
     }
@@ -48,7 +50,7 @@ public class Product {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.price = price;
+        this.price = new PriceValueObject(BigDecimal.valueOf(price));
         this.stock = stock;
         this.urlPhotos = urlPhotos;
     }
@@ -58,7 +60,7 @@ public class Product {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.price = price;
+        this.price = new PriceValueObject(BigDecimal.valueOf(price));
         this.stock = stock;
         this.urlPhotos = urlPhotos;
         this.archivedDate = archivedDate;
@@ -97,11 +99,11 @@ public class Product {
     }
 
     public Double getPrice() {
-        return price;
+        return price.getValue().doubleValue();
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        this.price = new PriceValueObject(BigDecimal.valueOf(price));
     }
 
     public Integer getStock() {

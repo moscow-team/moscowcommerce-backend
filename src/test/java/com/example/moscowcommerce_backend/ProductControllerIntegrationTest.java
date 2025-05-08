@@ -97,7 +97,7 @@ public class ProductControllerIntegrationTest {
         CreateProductDTO productDTO = new CreateProductDTO();
         productDTO.setName("Termo prueba");
         productDTO.setDescription("Termo de acero inoxidable de prueba");
-        productDTO.setPrice(2000.00);
+        productDTO.setPrice(2000.05);
         productDTO.setStock(4);
         productDTO.setCategoryId(String.valueOf(createdCategoryId));
         productDTO.setPhotos(Collections.emptyList()); // Imagen vacía
@@ -184,7 +184,7 @@ public class ProductControllerIntegrationTest {
         UpdateProductDTO updateProductDTO = new UpdateProductDTO();
         updateProductDTO.setName("Termo Actualizado");
         updateProductDTO.setDescription("Termo de acero inoxidable actualizado");
-        updateProductDTO.setPrice(333.00);
+        updateProductDTO.setPrice(333.99);
         updateProductDTO.setStock(1);
         updateProductDTO.setCategoryId(String.valueOf(createdCategoryId));
         updateProductDTO.setPhotos(Collections.emptyList()); // Imagen vacía
