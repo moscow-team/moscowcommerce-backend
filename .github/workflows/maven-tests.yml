@@ -57,4 +57,7 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
           SPRING_DATASOURCE_USERNAME: testuser
           SPRING_DATASOURCE_PASSWORD: testpass
+          SECURITY_JWT_SECRET_KEY: dummy-secret-for-testing
+          SECURITY_JWT_EXPIRATION_TIME: 3600000
+          IMGUR_CLIENT_ID: dummy-imgur-client-id
         run: mvn clean test -Dspring.profiles.active=test
