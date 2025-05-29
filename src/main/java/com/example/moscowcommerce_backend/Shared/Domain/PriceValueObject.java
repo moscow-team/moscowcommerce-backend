@@ -29,7 +29,6 @@ public class PriceValueObject {
       throw new IllegalArgumentException("Price cannot be negative.");
     }
     if (value.scale() > 2) {
-      System.out.println(value.scale());
       throw new IllegalArgumentException("Price cannot have more than two decimal places.");
     }
   }
