@@ -3,30 +3,30 @@ package com.example.moscowcommerce_backend.Shared.Domain;
 import java.util.Objects;
 
 public class IntValueObject {
-    private Integer value;
+  private Integer value;
 
-    public IntValueObject(Integer value) {
-        this.value = value;
-    }
+  public IntValueObject(Integer value) {
+    this.value = value;
+  }
 
-    public Integer value() {
-        return value;
-    }
+  public Integer value() {
+    return value;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        IntValueObject that = (IntValueObject) o;
-        return value.equals(that.value);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    IntValueObject that = (IntValueObject) o;
+    return value.equals(that.value);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(value);
+  }
 }

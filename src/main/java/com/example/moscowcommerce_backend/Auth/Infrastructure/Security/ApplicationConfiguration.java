@@ -1,7 +1,6 @@
 package com.example.moscowcommerce_backend.Auth.Infrastructure.Security;
 
 import com.example.moscowcommerce_backend.Users.Insfraestructure.Ports.IUserRepositoryJPA;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,40 +14,43 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class ApplicationConfiguration {
-    private final IUserRepositoryJPA userRepository;
+  private final IUserRepositoryJPA userRepository;
 
-    public ApplicationConfiguration(IUserRepositoryJPA userRepository) {
-        this.userRepository = userRepository;
-    }
+  public ApplicationConfiguration(IUserRepositoryJPA userRepository) {
+    this.userRepository = userRepository;
+  }
 
-    @Bean
-    UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+  @Bean
+  UserDetailsService userDetailsService() {
+    return username ->
+        userRepository
+            .findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+  }
 
-    @Bean
-    BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  BCryptPasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
+  }
 
-    @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+  @Bean
+  AuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+    authProvider.setUserDetailsService(userDetailsService());
+    authProvider.setPasswordEncoder(passwordEncoder());
 
-        return authProvider;
-    }
+    return authProvider;
+  }
 
-    @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+  @Bean
+  RestTemplate restTemplate() {
+    return new RestTemplate();
+  }
 }

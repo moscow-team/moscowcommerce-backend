@@ -11,14 +11,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "product_photos")
 public class ProductPhotoEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(nullable = false)
-    private String url;
+  @Column(nullable = false)
+  private String url;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private ProductEntity product;
+  @ManyToOne
+  @JoinColumn(name = "product_id", nullable = false)
+  private ProductEntity product;
 }

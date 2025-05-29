@@ -4,8 +4,7 @@ import com.example.moscowcommerce_backend.Order.Infrastructure.Entities.Enums.Pa
 
 public class PaidPayment extends PaymentState {
 
-    public PaidPayment(PaymentStatus statusName) {
-        super(statusName);
-
-    }
+  public PaidPayment(PaymentStatus statusName) {
+    super(statusName);
+  }
 }

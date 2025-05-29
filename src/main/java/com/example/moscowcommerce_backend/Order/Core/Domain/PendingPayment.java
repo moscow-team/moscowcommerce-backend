@@ -4,7 +4,7 @@ import com.example.moscowcommerce_backend.Order.Infrastructure.Entities.Enums.Pa
 
 public class PendingPayment extends PaymentState {
 
-    public PendingPayment(PaymentStatus statusName) {
-        super(statusName);
-    }
+  public PendingPayment(PaymentStatus statusName) {
+    super(statusName);
+  }
 }

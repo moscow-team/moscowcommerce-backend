@@ -7,9 +7,10 @@ import lombok.Data;
 @Data
 public class CriteriaParams {
 
-    @NotBlank(message = "Field no puede estar vacio en el parametro de busqueda")
-    @Size(min = 1, max = 50)
-    private String field;
-    private String value;
-    private String operator;
+  @NotBlank(message = "Field no puede estar vacio en el parametro de busqueda")
+  @Size(min = 1, max = 50)
+  private String field;
+
+  private String value;
+  private String operator;
 }

@@ -4,5 +4,5 @@ import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResetPasswo
 import com.example.moscowcommerce_backend.Users.Insfraestructure.DTO.ResultUserDTO;
 
 public interface IResetPassword {
-    ResultUserDTO resetPassword(ResetPasswordDTO resetPasswordDTO);
+  ResultUserDTO resetPassword(ResetPasswordDTO resetPasswordDTO);
 }

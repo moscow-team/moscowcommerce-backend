@@ -1,9 +1,8 @@
 package com.example.moscowcommerce_backend.Order.Core.Application.Ports;
 
+import com.example.moscowcommerce_backend.Order.Core.Domain.Order;
 import java.util.List;
 
-import com.example.moscowcommerce_backend.Order.Core.Domain.Order;
-
 public interface IListOrdersUseCase {
-    public List<Order> listOrders();    
+  public List<Order> listOrders();
 }
