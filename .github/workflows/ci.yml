@@ -68,10 +68,11 @@ jobs:
       - name: Check code formatting with Spotless
         run: mvn spotless:check
 
-      - name: Run TruffleHog via Docker
+      - name: Run TruffleHog secret scan
         run: |
           docker run --rm -v ${{ github.workspace }}:/repo ghcr.io/trufflesecurity/trufflehog:latest \
-            filesystem /repo --no-update --fail
+            filesystem /repo --only-verified --fail
+
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2

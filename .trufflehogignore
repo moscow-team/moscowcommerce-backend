@@ -1,0 +1,6 @@
+# Ignorar cadenas JDBC locales
+jdbc:postgresql://localhost:5432/testdb
+jdbc:postgresql://localhost:5432/moscow
+jdbc:mysql://localhost:3307/testdb
+jdbc:postgresql://db:5432/moscow
+jdbc:postgresql://db_test:5432/moscow-testdb
