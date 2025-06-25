@@ -24,6 +24,7 @@ public class CreateUserDTOTest {
   // 02.01 Registro de cliente nombre valido
   // 02.02 Registro de cliente email valido
   // 02.04 Registro de cliente rol valida
+  
   @Test
   void testValidCreateUserDTO() {
     // DTO válido
