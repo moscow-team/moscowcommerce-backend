@@ -18,3 +18,4 @@ primary_region = 'eze'
 
 [[vm]]
   size = 'shared-cpu-1x'
+  memory = "1024" 
